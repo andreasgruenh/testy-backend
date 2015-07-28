@@ -10,15 +10,15 @@
 	</parent>
 
 	<groupId>de.paul-consultants</groupId>
-	<artifactId>testy</artifactId>
+	<artifactId>testy-backend</artifactId>
 	<version>0.1.0</version>
 	<packaging>war</packaging>
 
-	<name>Testy</name>
+	<name>Testy-Backend</name>
 	<description>Schulungsplattform</description>
 
 	<properties>
-		<java.version>1.8</java.version>
+		<java.version>1.7</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<start-class>testy.Application</start-class>
 	</properties>
@@ -59,7 +59,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
-		<finalName>testy</finalName>
+		<finalName>testy-backend</finalName>
 	</build>
 
 	<repositories>

@@ -1,6 +1,6 @@
 package testy.security;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -21,9 +21,9 @@ public class FakeUserDetailsService implements UserDetailsService {
 	private Collection<? extends GrantedAuthority> getGrantedAuthorities(String username) {
 		Collection<? extends GrantedAuthority> authorities;
 		if (username.equals("John")) {
-			authorities = Arrays.asList(() -> "ROLE_ADMIN", () -> "ROLE_BASIC");
+			authorities = new ArrayList<>();
 		} else {
-			authorities = Arrays.asList(() -> "ROLE_BASIC");
+			authorities = new ArrayList<>();
 		}
 		return authorities;
 	}
