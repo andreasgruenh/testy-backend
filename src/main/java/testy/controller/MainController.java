@@ -12,7 +12,7 @@ public class MainController {
 	
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	String hello() {
-		return "Hello World!";
+		return "Backend is running!";
 	}
 	
 	@Autowired
