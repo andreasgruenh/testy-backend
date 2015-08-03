@@ -27,13 +27,14 @@ import org.springframework.web.context.WebApplicationContext;
 import testy.Application;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringApplicationConfiguration(classes = Application.class)	//Sorgt dafür, dass die Spring Boot Anwendung für den Test gestartet wird
 @WebAppConfiguration
 @IntegrationTest
 public class LdapLoginTest {
 
 	private MockMvc mockMvc;
 
+	//Sorgt dafür, dass die Spring security mit den entsprechenden Einstellungen geladen wird.
     @Autowired
     private FilterChainProxy filterChainProxy;
     
