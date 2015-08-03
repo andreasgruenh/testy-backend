@@ -12,7 +12,7 @@ public class MainController {
 	
 	@Autowired
 	private Environment environment;
-
+	
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	String hello() {
 		return "Backend is running!";
