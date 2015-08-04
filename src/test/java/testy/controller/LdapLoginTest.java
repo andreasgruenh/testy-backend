@@ -22,14 +22,18 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import testy.Application;
+import testy.dataaccess.AccountRepository;
+import testy.domain.Account;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)	//Sorgt dafür, dass die Spring Boot Anwendung für den Test gestartet wird
 @WebAppConfiguration
 @IntegrationTest
+@Transactional
 public class LdapLoginTest {
 
 	private MockMvc mockMvc;
@@ -43,6 +47,9 @@ public class LdapLoginTest {
     
     @Autowired
     private WebApplicationContext webAppContext;
+    
+    @Autowired
+    private AccountRepository accountRepo;
     
     @Before
     public void setUp() {
@@ -95,5 +102,18 @@ public class LdapLoginTest {
     	mockMvc.perform(get("/profile").session(session)).andExpect(content().string("test"));
     	mockMvc.perform(get("/logout").session(session)).andExpect(status().isOk());
     	mockMvc.perform(get("/profile").session(session)).andExpect(status().isUnauthorized());
+    }
+    
+    @Test
+    public void Login_WithCorrectCredentials_shouldAddTheUserToTheDb() throws Exception {
+    	Account account = accountRepo.findByAccountName(env.getProperty("ldap.loginTester"));
+    	assertTrue("Account darf zu Beginn es Tests nicht in der Datenbank vorhanden sein!",account==null);
+    	mockMvc.perform(post("/login")
+    			.param("username", env.getProperty("ldap.loginTester"))
+    			.param("password", env.getProperty("ldap.loginTesterPw")))
+    			.andExpect(status().isOk());
+    	account = accountRepo.findByAccountName(env.getProperty("ldap.loginTester"));
+    	assertTrue("Account muss nach dem Login in der DB sein!",account!=null);
+    	
     }	
 }
