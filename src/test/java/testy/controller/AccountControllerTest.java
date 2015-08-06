@@ -1,7 +1,8 @@
 package testy.controller;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import testy.Application;
+import testy.dataaccess.AccountRepository;
 import testy.domain.Account;
 import testy.domain.util.AccountBuilder;
 
@@ -50,6 +53,9 @@ public class AccountControllerTest {
 	private Environment env;
 	
 	private MockHttpSession session;
+	
+	@Autowired
+	private AccountRepository accountRepo;
 
     @Before
     public void setUp() throws Exception {
@@ -127,6 +133,20 @@ public class AccountControllerTest {
 				.session(session)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(jsonAccount)).andExpect(status().isForbidden());
+	}
+	
+	@Test
+	public void GET_accounts_shouldReturnASetWithTheCorrectObject() throws Exception {
+		
+		accountRepo.save(new Account("toni"));
+		accountRepo.save(new Account("tom"));
+		accountRepo.save(new Account("marcel"));
+		
+		ObjectMapper mapper = new ObjectMapper();
+		MockHttpServletResponse response = mockMvc.perform(get("/accounts/").session(session))
+			.andExpect(status().isOk()).andReturn().getResponse();
+		Account[] accounts = mapper.readValue(response.getContentAsString(), Account[].class);
+		assertTrue("Response should contain exactly 4 object", accounts.length == 4);
 	}
 
 }

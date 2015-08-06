@@ -22,6 +22,11 @@ public class AccountController {
 	@Autowired
 	AccountRepository accountRepo;
 	
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	Iterable<Account> getAllAccounts() {
+		return accountRepo.findAll();
+	}
+	
 	@RequestMapping(value = "/me", method = RequestMethod.GET)
 	Account getCurrentUser() {
 		return accountService.getLoggedInAccount();
