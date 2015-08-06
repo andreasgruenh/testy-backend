@@ -18,8 +18,8 @@ public class AccountBuilderTest {
 	@Test
 	public void builder_shouldReturnNonAdminAccountIfNotSpecified() {
 		Account account = AccountBuilder.startWith(accountname).build();
-		assertTrue(account.getAccountName().equals(accountname));
-		assertFalse(account.isAdmin());
+		assertTrue("Accountname should equal expected accountname", account.getAccountName().equals(accountname));
+		assertFalse("Admin role should be false if nothing is specified", account.isAdmin());
 	}
 	
 	@Test
@@ -30,27 +30,28 @@ public class AccountBuilderTest {
 				.withEmail(email)
 				.isAdmin(true)
 				.build();
-		assertTrue(account.getAccountName().equals(accountname));
-		assertTrue(account.getFirstname().equals(firstname));
-		assertTrue(account.getLastname().equals(lastname));
-		assertTrue(account.getEmail().equals(email));
-		assertTrue(account.isAdmin());
+		assertTrue("Accountname should equal given accountname", account.getAccountName().equals(accountname));
+		assertTrue("Firstname should equal given firstname", account.getFirstname().equals(firstname));
+		assertTrue("Lastname should equal given lastname", account.getLastname().equals(lastname));
+		assertTrue("Email should equal given email", account.getEmail().equals(email));
+		assertTrue("Admin value should equal expected value", account.isAdmin());
 	}
 	
 	@Test
 	public void builder_shouldReturnUpdatedAccount() {
 		Account account = new Account("tmüller");
-		account = AccountBuilder.startWithExisting(account)
+		Account newAccount = AccountBuilder.startWithExisting(account)
 				.withFirstname(firstname)
 				.withLastname(lastname)
 				.withEmail(email)
 				.isAdmin(true)
 				.build();
-		assertTrue(account.getAccountName().equals("tmüller"));
-		assertTrue(account.getFirstname().equals(firstname));
-		assertTrue(account.getLastname().equals(lastname));
-		assertTrue(account.getEmail().equals(email));
-		assertTrue(account.isAdmin());
+		assertTrue("The builder should return a reference to the same account object, not to a copy", account == newAccount);
+		assertTrue("Accountname should equal expected name", newAccount.getAccountName().equals("tmüller"));
+		assertTrue("Firstname should equal given firstname", newAccount.getFirstname().equals(firstname));
+		assertTrue("Lastname should equal given lastname", newAccount.getLastname().equals(lastname));
+		assertTrue("Email should equal given email", newAccount.getEmail().equals(email));
+		assertTrue("Admin value should equal expected value", newAccount.isAdmin());
 	}
 
 }

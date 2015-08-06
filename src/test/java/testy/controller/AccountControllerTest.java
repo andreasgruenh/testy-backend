@@ -1,7 +1,7 @@
 package testy.controller;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -100,10 +100,10 @@ public class AccountControllerTest {
 		String newJsonAccount = mockMvc.perform(get("/accounts/me").session(session)).andReturn().getResponse().getContentAsString();
 		Account newAccount = mapper.readValue(newJsonAccount, Account.class);
 		
-		assertTrue(newAccount.getFirstname().equals(firstname));
-		assertTrue(newAccount.getLastname().equals(lastname));
-		assertTrue(newAccount.getEmail().equals(email));
-		assertTrue(newAccount.isAdmin());
+		assertTrue("Firstname should be postet firstname", newAccount.getFirstname().equals(firstname));
+		assertTrue("Lastname should be posted lastname", newAccount.getLastname().equals(lastname));
+		assertTrue("E-Mail should be the posted email", newAccount.getEmail().equals(email));
+		assertFalse("Roles must not be changed with this endpoint!", newAccount.isAdmin());
 	}
 	
 	@Test
