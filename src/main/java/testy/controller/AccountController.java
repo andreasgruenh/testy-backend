@@ -41,7 +41,6 @@ public class AccountController {
 			.withEmail(newAccount.getEmail())
 			.withFirstname(newAccount.getFirstname())
 			.withLastname(newAccount.getLastname())
-			.isAdmin(newAccount.isAdmin())
 			.build();
 		
 		accountRepo.save(account);
