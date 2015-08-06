@@ -63,7 +63,7 @@ public class AccountControllerTest {
 	@Test
 	public void GET_accountsMe_shouldReturnTheCorrectAccountObject() throws Exception {
 		mockMvc.perform(get("/accounts/me").session(session)).andExpect(status().isOk()).andExpect(content().contentType("application/json;charset=UTF-8"))
-			.andExpect(jsonPath("$.accountName", is("aroth")));
+			.andExpect(jsonPath("$.accountName", is(env.getProperty("ldap.loginTester"))));
 	}
 	
 	@Test
