@@ -16,18 +16,29 @@ public class Account {
 	@Column(unique=true, nullable=false)
 	private String accountName;
 	
+	private boolean isAdmin;
+	
 	private String firstname, lastname;
 	
 	private String email;
 
 	public Account() {
-		
+		isAdmin = false;
 	}
 	
 	public Account(String accountName) {
 		this.accountName = accountName;
+		isAdmin = false;
 	}
 	
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+
 	public String getFirstname() {
 		return firstname;
 	}
@@ -59,7 +70,4 @@ public class Account {
 	public String getAccountName() {
 		return accountName;
 	}
-	
-	
-	
 }
