@@ -70,7 +70,7 @@ public class LdapLoginTest {
     			.param("username", "aroth")
     			.param("password", "123"))
     			.andExpect(status().is(302)).andReturn().getResponse().getRedirectedUrl();
-    	assertTrue(redirect.equals("/login?error"));
+    	assertTrue("Wrong credentials should return an error with a redirect url", redirect.equals("/login?error"));
     }
     
     @Test
@@ -113,7 +113,7 @@ public class LdapLoginTest {
     			.param("password", env.getProperty("ldap.loginTesterPw")))
     			.andExpect(status().isOk());
     	account = accountRepo.findByAccountName(env.getProperty("ldap.loginTester"));
-    	assertTrue("Account muss nach dem Login in der DB sein!",account!=null);
+    	assertTrue("Account muss nach dem Login in der DB sein!", account!=null);
     	
     }	
 }
