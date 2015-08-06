@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/")
 public class MainController {
 	
+	@Autowired
+	private Environment environment;
+	
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	String hello() {
 		return "Backend is running!";
 	}
-	
-	@Autowired
-	private Environment environment;
 
 	@RequestMapping("/profile")
 	String getProfile() {
