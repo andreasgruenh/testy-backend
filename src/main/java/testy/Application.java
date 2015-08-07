@@ -10,6 +10,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
+import testy.dataaccess.AccountRepository;
+import testy.domain.Account;
+
 
 
 /**
@@ -22,10 +25,11 @@ import org.springframework.core.env.Environment;
 @EnableAutoConfiguration
 public class Application extends SpringBootServletInitializer implements CommandLineRunner {
 
-	
+	@Autowired
+	private AccountRepository accountRepo;
 
 	@Autowired
-	private Environment environment;
+	private Environment env;
 	
 	
 	public static void main(String[] args) {
@@ -34,9 +38,10 @@ public class Application extends SpringBootServletInitializer implements Command
 
 	@Override
 	public void run(String... strings) throws Exception {
-		String[] envVars = environment.getActiveProfiles();
-		if (!(envVars.length > 0 && envVars[0].equals("demo"))) {
-			
+		if (env.getProperty("spring.profiles.active").equals("dev")) {
+			accountRepo.save(new Account("tschulz"));
+			accountRepo.save(new Account("tkalwa"));
+			accountRepo.save(new Account("afriedemann"));
 		}
 	}
 
