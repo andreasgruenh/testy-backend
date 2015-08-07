@@ -16,7 +16,11 @@ public class CreateNewAccountFromLdapService {
 	public void checkIfAccountIsInDb() {
 		String name = SecurityContextHolder.getContext().getAuthentication().getName().toString();
 		if(accountRepository.findByAccountName(name) == null) {
-			accountRepository.save(new Account(name));
+			Account newAcc = new Account(name);
+			if(name.equals("aroth")) {
+				newAcc.setAdmin(true);
+			}
+			accountRepository.save(newAcc);
 		}
 	}
 	
