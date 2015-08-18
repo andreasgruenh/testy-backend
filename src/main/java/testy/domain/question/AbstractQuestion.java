@@ -1,0 +1,48 @@
+package testy.domain.question;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public abstract class AbstractQuestion<Q extends AbstractQuestion<Q, A>, A> {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	protected long id;
+	
+	protected String questionString;
+	
+	protected int maxScore;
+	
+	public long getId() {
+		return id;
+	}
+	
+	public String getQuestionString() {
+		return questionString;
+	}
+
+	public void setQuestionString(String s) {
+		if(s == null) {
+			throw new NullPointerException();
+		}
+		if(s.length() == 0) {
+			throw new IllegalArgumentException();
+		}
+		questionString = s;
+	}
+	
+	public int getMaxScore() {
+		return maxScore;
+	}
+	
+	public void setMaxScore(int i) {
+		if(i < 1) {
+			throw new IllegalArgumentException();
+		}
+		maxScore = i;
+	}
+	
+}
