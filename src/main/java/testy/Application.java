@@ -1,5 +1,8 @@
 package testy;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -11,7 +14,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 import testy.dataaccess.AccountRepository;
+import testy.dataaccess.QuestionRepository;
 import testy.domain.Account;
+import testy.domain.question.image.ImageQuestion;
+import testy.domain.question.mc.MCQuestion;
 
 
 
@@ -27,10 +33,9 @@ public class Application extends SpringBootServletInitializer implements Command
 
 	@Autowired
 	private AccountRepository accountRepo;
-
+	
 	@Autowired
 	private Environment env;
-	
 	
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
