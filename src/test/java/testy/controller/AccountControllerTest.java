@@ -109,7 +109,7 @@ public class AccountControllerTest {
 		assertTrue("Firstname should be postet firstname", newAccount.getFirstname().equals(firstname));
 		assertTrue("Lastname should be posted lastname", newAccount.getLastname().equals(lastname));
 		assertTrue("E-Mail should be the posted email", newAccount.getEmail().equals(email));
-		assertFalse("Roles must not be changed with this endpoint!", newAccount.isAdmin());
+		assertTrue("Roles must not be changed with this endpoint!", newAccount.isAdmin());
 	}
 	
 	@Test
