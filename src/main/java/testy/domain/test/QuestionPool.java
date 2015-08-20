@@ -1,5 +1,6 @@
 package testy.domain.test;
 
+import java.util.Collections;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -23,5 +24,28 @@ public class QuestionPool {
 	private int maxScoreOfConcreteTest;
 	
 	private int percentageToPass;
-	
+
+	public Set<AbstractQuestion<?, ?>> getQuestions() {
+		return Collections.unmodifiableSet(questions);
+	}
+
+	public int getMaxScoreOfConcreteTest() {
+		return maxScoreOfConcreteTest;
+	}
+
+	public void setMaxScoreOfConcreteTest(int maxScoreOfConcreteTest) {
+		this.maxScoreOfConcreteTest = maxScoreOfConcreteTest;
+	}
+
+	public int getPercentageToPass() {
+		return percentageToPass;
+	}
+
+	public void setPercentageToPass(int percentageToPass) {
+		this.percentageToPass = percentageToPass;
+	}
+
+	public long getId() {
+		return id;
+	}
 }
