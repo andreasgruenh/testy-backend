@@ -21,6 +21,6 @@ public class Subject {
 	@JsonView(Views.Summary.class)
 	private String name;
 	
-	private QuestionPool test;
+	private QuestionPool questionPool;
 	
 }
