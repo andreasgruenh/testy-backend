@@ -8,22 +8,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import testy.domain.question.AbstractQuestion;
 
 @Entity
-public class TestTemplate {
-
-	@Autowired
-	private ConcreteTestBuilder testBuilder;
+public class QuestionPool {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	
 	@OneToMany
-	private Set<AbstractQuestion<?, ?>> questionPool;
+	private Set<AbstractQuestion<?, ?>> questions;
 	
 	private int maxScoreOfConcreteTest;
 	

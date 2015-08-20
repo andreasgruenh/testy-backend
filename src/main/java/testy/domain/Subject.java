@@ -5,7 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import testy.domain.test.TestTemplate;
+import testy.domain.test.QuestionPool;
 import testy.domain.util.Views;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -21,6 +21,6 @@ public class Subject {
 	@JsonView(Views.Summary.class)
 	private String name;
 	
-	private TestTemplate test;
+	private QuestionPool test;
 	
 }
