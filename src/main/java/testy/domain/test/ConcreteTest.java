@@ -1,4 +1,4 @@
-package testy.domain;
+package testy.domain.test;
 
 public class ConcreteTest {
 
