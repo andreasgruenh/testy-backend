@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 import testy.domain.test.QuestionPool;
 import testy.domain.util.Views;
@@ -21,6 +22,7 @@ public class Subject {
 	@JsonView(Views.Summary.class)
 	private String name;
 	
+	@OneToOne
 	private QuestionPool questionPool;
 	
 }
