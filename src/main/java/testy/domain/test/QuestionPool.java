@@ -1,5 +1,7 @@
 package testy.domain.test;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -22,6 +24,10 @@ public class QuestionPool {
 	
 	private int percentageToPass;
 
+	public QuestionPool() {
+		categories = new HashSet<Category>();
+	}
+	
 	public int getMaxScoreOfConcreteTest() {
 		int result = 0;
 		for(Category category: categories) {
@@ -42,7 +48,21 @@ public class QuestionPool {
 		return id;
 	}
 	
+	public void addCategory(Category category) {
+		if(category == null) {
+			throw new NullPointerException();
+		}
+		categories.add(category);
+	}
+	
+	public void removeCategory(Category category) {
+		if(category == null) {
+			throw new NullPointerException();
+		}
+		categories.remove(category);
+	}
+	
 	public Set<Category> getCategories() {
-		return categories;
+		return Collections.unmodifiableSet(categories);
 	}
 }
