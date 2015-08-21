@@ -1,5 +1,6 @@
 package testy.domain.question;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,6 +63,13 @@ public class Category {
 			throw new NullPointerException();
 		}
 		questions.add(question);
+	}
+	
+	public void addAllQuestions(Collection<AbstractQuestion<?, ?>> questions) {
+		if(questions == null) {
+			throw new NullPointerException();
+		}
+		this.questions.addAll(questions);
 	}
 	
 	public void removeQuestion(AbstractQuestion<?, ?> question) {

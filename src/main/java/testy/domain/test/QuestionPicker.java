@@ -9,31 +9,47 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import testy.domain.question.AbstractQuestion;
+import testy.domain.question.Category;
 
 @Service
 public class QuestionPicker {
 
-	public Set<AbstractQuestion<?, ?>> pickQuestionsFrom(QuestionPool pool) {
+	/* 
+	 * Returns the Category with random questions from the original catgegories
+	 */
+	public Set<Category> generateCategoriesWithRandomQuestionsFrom(QuestionPool pool) {
 		
-		int maxScore = pool.getMaxScoreOfConcreteTest();
+		Set<Category> categories =  pool.getCategories();
+		Set<Category> resultSet = new HashSet<Category>();
 		
-		List<AbstractQuestion<?, ?>> questions = new LinkedList<AbstractQuestion<?, ?>>();
-
+		for(Category cat: categories) {
+			Category strippedCat = new Category();
+			strippedCat.addAllQuestions(getRandomQuestionsFrom(cat));
+			resultSet.add(strippedCat);
+		}
+		return resultSet;
+	};
+	
+	private Set<AbstractQuestion<?, ?>> getRandomQuestionsFrom(Category cat) {
 		
-		Collections.shuffle(questions);
+		int maxScore = cat.getMaxScore();
 		
-		Set<AbstractQuestion<?, ?>> result = new HashSet<AbstractQuestion<?, ?>>();
+		Set<AbstractQuestion<?, ?>> resultSet = new HashSet<AbstractQuestion<?, ?>>();
 		
-		while(sumOfScores(result) < maxScore) {
-			if(sumOfScores(result) + questions.get(0).getMaxScore() <= maxScore) {
-				result.add(questions.remove(0));
+		List<AbstractQuestion<?, ?>> allQuestions = new LinkedList<AbstractQuestion<?, ?>>();
+		allQuestions.addAll(cat.getQuestions());
+		Collections.shuffle(allQuestions);
+		
+		while(sumOfScores(resultSet) < maxScore) {
+			if(sumOfScores(resultSet) + allQuestions.get(0).getMaxScore() <= maxScore) {
+				resultSet.add(allQuestions.remove(0));
 			} else {
-				questions.remove(0);
+				allQuestions.remove(0);
 			}
 		}
 		
-		return result;
-	};
+		return resultSet;
+	}
 	
 	private int sumOfScores(Iterable<AbstractQuestion<?, ?>> questions) {
 		int result = 0;
