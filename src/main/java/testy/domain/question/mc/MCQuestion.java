@@ -23,4 +23,9 @@ public class MCQuestion extends AbstractQuestion<MCQuestion, MCAnswer> {
 	public void setAnswers(Set<String> answers) {
 		this.answers = answers;
 	}
+	
+	@Override
+	public int validate(MCAnswer answer) {
+		return validator.validate(this, answer);
+	}
 }
