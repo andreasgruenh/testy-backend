@@ -90,11 +90,13 @@ public class AccountControllerTest {
 		String jsonAccount = mockMvc.perform(get("/accounts/me").session(session)).andReturn().getResponse().getContentAsString();
 		Account account = mapper.readValue(jsonAccount, Account.class);
 		
+		final boolean isAdmin = account.isAdmin();
+		
 		account = AccountBuilder.startWithExisting(account)
 			.withEmail(email)
 			.withFirstname(firstname)
 			.withLastname(lastname)
-			.isAdmin(true)
+			.isAdmin(!isAdmin)
 			.build();
 		
 		jsonAccount = mapper.writeValueAsString(account);
@@ -109,7 +111,7 @@ public class AccountControllerTest {
 		assertTrue("Firstname should be postet firstname", newAccount.getFirstname().equals(firstname));
 		assertTrue("Lastname should be posted lastname", newAccount.getLastname().equals(lastname));
 		assertTrue("E-Mail should be the posted email", newAccount.getEmail().equals(email));
-		assertTrue("Roles must not be changed with this endpoint!", newAccount.isAdmin());
+		assertTrue("Roles must not be changed with this endpoint!", newAccount.isAdmin() == isAdmin);
 	}
 	
 	@Test
