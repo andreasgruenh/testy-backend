@@ -1,6 +1,7 @@
 package testy.domain.question;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -24,10 +25,11 @@ public class Category {
 	private Set<AbstractQuestion<?, ?>> questions;
 	
 	public Category() {
-		
+		questions = new HashSet<AbstractQuestion<?, ?>>();
 	}
 	
 	public Category(String name) {
+		questions = new HashSet<AbstractQuestion<?, ?>>();
 		this.name = name;
 	}
 	
@@ -55,6 +57,18 @@ public class Category {
 		return Collections.unmodifiableSet(questions);
 	}
 	
+	public void addQuestion(AbstractQuestion<?, ?> question) {
+		if(question == null) {
+			throw new NullPointerException();
+		}
+		questions.add(question);
+	}
 	
+	public void removeQuestion(AbstractQuestion<?, ?> question) {
+		if(question == null) {
+			throw new NullPointerException();
+		}
+		questions.remove(question);
+	}
 	
 }
