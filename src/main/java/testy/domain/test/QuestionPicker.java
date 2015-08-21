@@ -18,7 +18,7 @@ public class QuestionPicker {
 		int maxScore = pool.getMaxScoreOfConcreteTest();
 		
 		List<AbstractQuestion<?, ?>> questions = new LinkedList<AbstractQuestion<?, ?>>();
-		questions.addAll(pool.getQuestions());
+
 		
 		Collections.shuffle(questions);
 		

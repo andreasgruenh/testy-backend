@@ -1,6 +1,5 @@
 package testy.domain.test;
 
-import java.util.Collections;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -9,7 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import testy.domain.question.AbstractQuestion;
+import testy.domain.question.Category;
 
 @Entity
 public class QuestionPool {
@@ -19,22 +18,16 @@ public class QuestionPool {
 	private long id;
 	
 	@OneToMany
-	private Set<AbstractQuestion<?, ?>> questions;
-	
-	private int maxScoreOfConcreteTest;
+	private Set<Category> categories;
 	
 	private int percentageToPass;
 
-	public Set<AbstractQuestion<?, ?>> getQuestions() {
-		return Collections.unmodifiableSet(questions);
-	}
-
 	public int getMaxScoreOfConcreteTest() {
-		return maxScoreOfConcreteTest;
-	}
-
-	public void setMaxScoreOfConcreteTest(int maxScoreOfConcreteTest) {
-		this.maxScoreOfConcreteTest = maxScoreOfConcreteTest;
+		int result = 0;
+		for(Category category: categories) {
+			result += category.getMaxScore();
+		}
+		return result;
 	}
 
 	public int getPercentageToPass() {
@@ -47,5 +40,9 @@ public class QuestionPool {
 
 	public long getId() {
 		return id;
+	}
+	
+	public Set<Category> getCategories() {
+		return categories;
 	}
 }

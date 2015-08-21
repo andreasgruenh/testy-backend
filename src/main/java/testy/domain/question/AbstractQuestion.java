@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 @Entity
 public abstract class AbstractQuestion<Q extends AbstractQuestion<Q, A>, A> {
@@ -11,6 +12,9 @@ public abstract class AbstractQuestion<Q extends AbstractQuestion<Q, A>, A> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	protected long id;
+	
+	@OneToOne
+	private Category category;
 	
 	protected String questionString;
 	
