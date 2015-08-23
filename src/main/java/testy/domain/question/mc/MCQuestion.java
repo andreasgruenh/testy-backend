@@ -7,9 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
 import testy.domain.question.AbstractQuestion;
-import testy.domain.question.QuestionType;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @Entity
+@JsonTypeName("MCQuestion")
 public class MCQuestion extends AbstractQuestion<MCQuestion, MCAnswer> {
 	
 	@OneToMany
@@ -17,7 +19,6 @@ public class MCQuestion extends AbstractQuestion<MCQuestion, MCAnswer> {
 	
 	public MCQuestion() {
 		possibleAnswers = new HashSet<MCPossibility>();
-		type = QuestionType.MCQuestion;
 	}
 	
 	public void addAnswer(MCPossibility answer) {
@@ -25,7 +26,6 @@ public class MCQuestion extends AbstractQuestion<MCQuestion, MCAnswer> {
 			throw new NullPointerException();
 		}
 		possibleAnswers.add(answer);
-		type = QuestionType.MCQuestion;
 	}
 	
 	public void removeAnswer(MCPossibility answer) {

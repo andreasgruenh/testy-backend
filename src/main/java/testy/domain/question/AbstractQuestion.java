@@ -8,15 +8,24 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
+import testy.domain.question.image.ImageQuestion;
+import testy.domain.question.mc.MCQuestion;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+
 @Entity
+@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include = As.PROPERTY, property = "type")
+@JsonSubTypes({
+    @Type(name="MCQuestion", value=MCQuestion.class), 
+    @Type(name="ImageQuestion", value=ImageQuestion.class)})
 public abstract class AbstractQuestion<Q extends AbstractQuestion<Q, A>, A> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	protected long id;
-	
-	@Enumerated(EnumType.STRING)
-	protected QuestionType type;
 	
 	@OneToOne
 	private Category category;
