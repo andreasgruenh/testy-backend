@@ -40,8 +40,8 @@ public class MCAnswerValidatorTest {
 	private MCAnswer answer2 = new MCAnswer(quest2,
 	        new HashSet<MCPossibility>(Arrays.asList(poss4)), new HashSet<MCPossibility>(
 	                Arrays.asList(poss5, poss6)));
-	private MCAnswer answer3 = new MCAnswer(quest3, new HashSet<MCPossibility>(),
-	        new HashSet<MCPossibility>(Arrays.asList(poss7, poss8, poss9, poss10)));
+	private MCAnswer answer3 = new MCAnswer(quest3, new HashSet<MCPossibility>(Arrays.asList(poss9,
+	        poss10)), new HashSet<MCPossibility>(Arrays.asList(poss7, poss8)));
 
 	@Before
 	public void setup() {
@@ -68,9 +68,9 @@ public class MCAnswerValidatorTest {
 	}
 
 	@Test
-	public void validate_shouldReturnZeroPointsIfNothingIsChecked() {
+	public void validate_shouldReturnZeroPointsIfEverythingIsWrong() {
 		int score = validator.validate(answer3);
-		assertTrue("Validate should return zero if nothing is checked. It was " + score
+		assertTrue("Validate should return zero if Everything is wron. It was " + score
 		        + " but expected is: 0", score == 0);
 	}
 
@@ -79,9 +79,9 @@ public class MCAnswerValidatorTest {
 		int score = validator.validate(answer2);
 		assertTrue(
 		        "Validate should return value between zero and maxScore if not everthing was correct. It was "
-		                + score + " but expected is something between 0 and "
-		                + answer2.getQuestion().getMaxScore(), score > 0
-		                && score < answer2.getQuestion().getMaxScore());
+		                + score + " but expected is "
+		                + (int) (quest2.getMaxScore() * (double) 1 / 3),
+		        score == (int) (quest2.getMaxScore() * (double) 1 / 3));
 	}
 
 }
