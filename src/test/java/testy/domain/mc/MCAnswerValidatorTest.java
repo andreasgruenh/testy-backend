@@ -67,4 +67,21 @@ public class MCAnswerValidatorTest {
 		        + " but expected is: " + quest1.getMaxScore(), score == quest1.getMaxScore());
 	}
 
+	@Test
+	public void validate_shouldReturnZeroPointsIfNothingIsChecked() {
+		int score = validator.validate(answer3);
+		assertTrue("Validate should return zero if nothing is checked. It was " + score
+		        + " but expected is: 0", score == 0);
+	}
+
+	@Test
+	public void validate_shouldReturnValueBetweenZeroAndMaxScoreIfNotEverythingIsCorrect() {
+		int score = validator.validate(answer2);
+		assertTrue(
+		        "Validate should return value between zero and maxScore if not everthing was correct. It was "
+		                + score + " but expected is something between 0 and "
+		                + answer2.getQuestion().getMaxScore(), score > 0
+		                && score < answer2.getQuestion().getMaxScore());
+	}
+
 }
