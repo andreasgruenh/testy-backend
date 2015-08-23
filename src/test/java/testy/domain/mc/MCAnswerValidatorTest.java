@@ -40,7 +40,7 @@ public class MCAnswerValidatorTest {
 	private MCAnswer answer2 = new MCAnswer(quest2,
 	        new HashSet<MCPossibility>(Arrays.asList(poss4)), new HashSet<MCPossibility>(
 	                Arrays.asList(poss5, poss6)));
-	private MCAnswer answer3 = new MCAnswer(quest3, new HashSet<MCPossibility>(Arrays.asList()),
+	private MCAnswer answer3 = new MCAnswer(quest3, new HashSet<MCPossibility>(),
 	        new HashSet<MCPossibility>(Arrays.asList(poss7, poss8, poss9, poss10)));
 
 	@Before

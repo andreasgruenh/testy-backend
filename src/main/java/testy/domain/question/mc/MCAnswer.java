@@ -17,7 +17,7 @@ public class MCAnswer extends AbstractAnswer {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	protected long id;
 	
 	private final MCQuestion question;
 	
