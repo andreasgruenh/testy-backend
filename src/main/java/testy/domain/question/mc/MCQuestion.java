@@ -4,12 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import testy.domain.question.AbstractQuestion;
+import testy.domain.question.QuestionType;
 
 @Entity
 public class MCQuestion extends AbstractQuestion<MCQuestion, MCAnswer> {
@@ -19,6 +17,7 @@ public class MCQuestion extends AbstractQuestion<MCQuestion, MCAnswer> {
 	
 	public MCQuestion() {
 		possibleAnswers = new HashSet<MCPossibility>();
+		type = QuestionType.MCQuestion;
 	}
 	
 	public void addAnswer(MCPossibility answer) {
@@ -26,6 +25,7 @@ public class MCQuestion extends AbstractQuestion<MCQuestion, MCAnswer> {
 			throw new NullPointerException();
 		}
 		possibleAnswers.add(answer);
+		type = QuestionType.MCQuestion;
 	}
 	
 	public void removeAnswer(MCPossibility answer) {

@@ -1,6 +1,8 @@
 package testy.domain.question;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,6 +14,9 @@ public abstract class AbstractQuestion<Q extends AbstractQuestion<Q, A>, A> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	protected long id;
+	
+	@Enumerated(EnumType.STRING)
+	protected QuestionType type;
 	
 	@OneToOne
 	private Category category;
