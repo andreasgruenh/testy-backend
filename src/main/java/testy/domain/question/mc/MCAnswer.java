@@ -14,4 +14,24 @@ public class MCAnswer extends AbstractAnswer {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	
+	private final MCQuestion question;
+	
+	private final boolean checked;
+	
+	public MCAnswer(MCQuestion question, boolean checked) {
+		this.question = question;
+		this.checked = checked;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public MCQuestion getQuestion() {
+		return question;
+	}
+
+	public boolean isChecked() {
+		return checked;
+	}
 }
