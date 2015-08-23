@@ -14,10 +14,6 @@ import testy.domain.question.AbstractQuestion;
 @Entity
 public class MCQuestion extends AbstractQuestion<MCQuestion, MCAnswer> {
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	
 	@OneToMany
 	private Set<MCPossibility> possibleAnswers;
 	

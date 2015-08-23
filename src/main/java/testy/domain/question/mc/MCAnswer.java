@@ -3,10 +3,8 @@ package testy.domain.question.mc;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import testy.domain.question.AbstractAnswer;
 
@@ -15,10 +13,7 @@ public class MCAnswer extends AbstractAnswer {
 	
 	private static MCAnswerValidator validator = new MCAnswerValidator();
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	protected long id;
-	
+	@OneToOne
 	private final MCQuestion question;
 	
 	@OneToMany
