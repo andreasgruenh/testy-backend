@@ -13,8 +13,6 @@ import testy.domain.question.AbstractQuestion;
 
 @Entity
 public class MCQuestion extends AbstractQuestion<MCQuestion, MCAnswer> {
-
-	private static MCQuestionValidator validator = new MCQuestionValidator();
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -47,10 +45,5 @@ public class MCQuestion extends AbstractQuestion<MCQuestion, MCAnswer> {
 		}
 		possibleAnswers.remove(answer);
 		possibleAnswers.add(new MCPossibility(answer.getText(), answer.isCorrect()));
-	}
-	
-	@Override
-	public int validate(MCAnswer answer) {
-		return validator.validate(this, answer);
 	}
 }

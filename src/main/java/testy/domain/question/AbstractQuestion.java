@@ -20,8 +20,6 @@ public abstract class AbstractQuestion<Q extends AbstractQuestion<Q, A>, A> {
 	
 	protected final int maxScore = 10;
 	
-	public abstract int validate(A answer);
-	
 	public long getId() {
 		return id;
 	}

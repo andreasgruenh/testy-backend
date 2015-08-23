@@ -1,14 +1,19 @@
 package testy.domain.question.mc;
 
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import testy.domain.question.AbstractAnswer;
 
 @Entity
 public class MCAnswer extends AbstractAnswer {
+	
+	private static MCAnswerValidator validator = new MCAnswerValidator();
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -16,11 +21,16 @@ public class MCAnswer extends AbstractAnswer {
 	
 	private final MCQuestion question;
 	
-	private final boolean checked;
+	@OneToMany
+	private final Set<MCPossibility> checkedPossibilities;
 	
-	public MCAnswer(MCQuestion question, boolean checked) {
+	@OneToMany
+	private final Set<MCPossibility> uncheckedPossibilities;
+	
+	public MCAnswer(MCQuestion question, Set<MCPossibility> checkedAnswers, Set<MCPossibility> uncheckedAnswers) {
 		this.question = question;
-		this.checked = checked;
+		this.checkedPossibilities = checkedAnswers;
+		this.uncheckedPossibilities = uncheckedAnswers;
 	}
 
 	public long getId() {
@@ -31,7 +41,16 @@ public class MCAnswer extends AbstractAnswer {
 		return question;
 	}
 
-	public boolean isChecked() {
-		return checked;
+	public Set<MCPossibility> getCheckedPossibilities() {
+		return checkedPossibilities;
+	}
+
+	public Set<MCPossibility> getUncheckedPossibilities() {
+		return uncheckedPossibilities;
+	}
+	
+	@Override
+	public int validate() {
+		return validator.validate(this);
 	}
 }

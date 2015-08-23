@@ -7,11 +7,6 @@ import testy.domain.question.AbstractQuestion;
 @Entity
 public class ImageQuestion extends AbstractQuestion<ImageQuestion, ImageAnswer>{
 
-	private static ImageQuestionValidator validator = new ImageQuestionValidator();
 
-	@Override
-    public int validate(ImageAnswer answer) {
-	    return validator.validate(this, answer);
-    }
 	
 }

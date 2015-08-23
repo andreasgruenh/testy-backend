@@ -16,4 +16,6 @@ public abstract class AbstractAnswer {
 	@OneToOne
 	private AbstractQuestion<?, ?> question;
 	
+	public abstract int validate();
+	
 }
