@@ -10,6 +10,8 @@ public abstract class AbstractAnswer {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	protected long id;
+	
+	public abstract int validate();
 	
 }

@@ -1,12 +1,26 @@
 package testy.domain.question;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
+import testy.domain.question.image.ImageQuestion;
+import testy.domain.question.mc.MCQuestion;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+
 @Entity
+@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include = As.PROPERTY, property = "type")
+@JsonSubTypes({
+    @Type(name="MCQuestion", value=MCQuestion.class), 
+    @Type(name="ImageQuestion", value=ImageQuestion.class)})
 public abstract class AbstractQuestion<Q extends AbstractQuestion<Q, A>, A> {
 
 	@Id
@@ -18,9 +32,7 @@ public abstract class AbstractQuestion<Q extends AbstractQuestion<Q, A>, A> {
 	
 	protected String questionString;
 	
-	protected int maxScore;
-	
-	public abstract int validate(A answer);
+	protected final int maxScore = 10;
 	
 	public long getId() {
 		return id;
@@ -43,12 +55,4 @@ public abstract class AbstractQuestion<Q extends AbstractQuestion<Q, A>, A> {
 	public int getMaxScore() {
 		return maxScore;
 	}
-	
-	public void setMaxScore(int i) {
-		if(i < 1) {
-			throw new IllegalArgumentException();
-		}
-		maxScore = i;
-	}
-	
 }

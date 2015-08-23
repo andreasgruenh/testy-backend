@@ -3,29 +3,43 @@ package testy.domain.question.mc;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 
 import testy.domain.question.AbstractQuestion;
 
-@Entity
-public class MCQuestion extends AbstractQuestion<MCQuestion, MCAnswer> {
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
-	private static MCQuestionValidator validator = new MCQuestionValidator();
+@Entity
+@JsonTypeName("MCQuestion")
+public class MCQuestion extends AbstractQuestion<MCQuestion, MCAnswer> {
 	
-	@ElementCollection
-	private Set<String> answers;
+	@OneToMany
+	private Set<MCPossibility> possibleAnswers;
 	
 	public MCQuestion() {
-		answers = new HashSet<String>();
+		possibleAnswers = new HashSet<MCPossibility>();
 	}
 	
-	public void setAnswers(Set<String> answers) {
-		this.answers = answers;
+	public void addAnswer(MCPossibility answer) {
+		if(answer == null) {
+			throw new NullPointerException();
+		}
+		possibleAnswers.add(answer);
 	}
 	
-	@Override
-	public int validate(MCAnswer answer) {
-		return validator.validate(this, answer);
+	public void removeAnswer(MCPossibility answer) {
+		if(answer == null) {
+			throw new NullPointerException();
+		}
+		possibleAnswers.remove(answer);
+	}
+	
+	public void updateAnswer(MCPossibility answer) {
+		if(answer == null) {
+			throw new NullPointerException();
+		}
+		possibleAnswers.remove(answer);
+		possibleAnswers.add(new MCPossibility(answer.getText(), answer.isCorrect()));
 	}
 }

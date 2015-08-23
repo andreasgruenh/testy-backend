@@ -4,14 +4,13 @@ import javax.persistence.Entity;
 
 import testy.domain.question.AbstractQuestion;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 @Entity
+@JsonTypeName("ImageQuestion")
 public class ImageQuestion extends AbstractQuestion<ImageQuestion, ImageAnswer>{
 
-	private static ImageQuestionValidator validator = new ImageQuestionValidator();
-
-	@Override
-    public int validate(ImageAnswer answer) {
-	    return validator.validate(this, answer);
-    }
+	public ImageQuestion() {
+	}
 	
 }
