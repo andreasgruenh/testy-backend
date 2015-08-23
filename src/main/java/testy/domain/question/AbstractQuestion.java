@@ -18,7 +18,7 @@ public abstract class AbstractQuestion<Q extends AbstractQuestion<Q, A>, A> {
 	
 	protected String questionString;
 	
-	protected int maxScore;
+	protected final int maxScore = 10;
 	
 	public abstract int validate(A answer);
 	
@@ -43,12 +43,4 @@ public abstract class AbstractQuestion<Q extends AbstractQuestion<Q, A>, A> {
 	public int getMaxScore() {
 		return maxScore;
 	}
-	
-	public void setMaxScore(int i) {
-		if(i < 1) {
-			throw new IllegalArgumentException();
-		}
-		maxScore = i;
-	}
-	
 }

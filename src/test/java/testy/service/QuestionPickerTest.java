@@ -29,7 +29,6 @@ public class QuestionPickerTest {
 		int index = 0;
 		for (MCQuestion question : questions) {
 			question = new MCQuestion();
-			question.setMaxScore(5);
 			if (index % 3 == 0) {
 				category1.addQuestion(question);
 			} else if (index % 3 == 1) {
