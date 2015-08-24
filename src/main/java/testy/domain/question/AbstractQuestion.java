@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 @JsonSubTypes({
     @Type(name="MCQuestion", value=MCQuestion.class), 
     @Type(name="ImageQuestion", value=ImageQuestion.class)})
-public abstract class AbstractQuestion<Q extends AbstractQuestion<Q, A>, A> {
+public abstract class AbstractQuestion {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

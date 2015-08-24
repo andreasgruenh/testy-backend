@@ -30,13 +30,13 @@ public class QuestionPicker {
 		return resultSet;
 	};
 	
-	private Set<AbstractQuestion<?, ?>> getRandomQuestionsFrom(Category cat) {
+	private Set<AbstractQuestion> getRandomQuestionsFrom(Category cat) {
 		
 		int maxScore = cat.getMaxScore();
 		
-		Set<AbstractQuestion<?, ?>> resultSet = new HashSet<AbstractQuestion<?, ?>>();
+		Set<AbstractQuestion> resultSet = new HashSet<AbstractQuestion>();
 		
-		List<AbstractQuestion<?, ?>> allQuestions = new LinkedList<AbstractQuestion<?, ?>>();
+		List<AbstractQuestion> allQuestions = new LinkedList<AbstractQuestion>();
 		allQuestions.addAll(cat.getQuestions());
 		Collections.shuffle(allQuestions);
 		
@@ -51,9 +51,9 @@ public class QuestionPicker {
 		return resultSet;
 	}
 	
-	private int sumOfScores(Iterable<AbstractQuestion<?, ?>> questions) {
+	private int sumOfScores(Iterable<AbstractQuestion> questions) {
 		int result = 0;
-		for(AbstractQuestion<?, ?> question: questions) {
+		for(AbstractQuestion question: questions) {
 			result += question.getMaxScore();
 		}
 		return result;

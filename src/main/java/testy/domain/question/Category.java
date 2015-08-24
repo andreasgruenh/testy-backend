@@ -23,14 +23,14 @@ public class Category {
 	private int maxScore;
 	
 	@OneToMany
-	private Set<AbstractQuestion<?, ?>> questions;
+	private Set<AbstractQuestion> questions;
 	
 	public Category() {
-		questions = new HashSet<AbstractQuestion<?, ?>>();
+		questions = new HashSet<AbstractQuestion>();
 	}
 	
 	public Category(String name) {
-		questions = new HashSet<AbstractQuestion<?, ?>>();
+		questions = new HashSet<AbstractQuestion>();
 		this.name = name;
 	}
 	
@@ -54,25 +54,25 @@ public class Category {
 		return id;
 	}
 
-	public Set<AbstractQuestion<?, ?>> getQuestions() {
+	public Set<AbstractQuestion> getQuestions() {
 		return Collections.unmodifiableSet(questions);
 	}
 	
-	public void addQuestion(AbstractQuestion<?, ?> question) {
+	public void addQuestion(AbstractQuestion question) {
 		if(question == null) {
 			throw new NullPointerException();
 		}
 		questions.add(question);
 	}
 	
-	public void addAllQuestions(Collection<AbstractQuestion<?, ?>> questions) {
+	public void addAllQuestions(Collection<AbstractQuestion> questions) {
 		if(questions == null) {
 			throw new NullPointerException();
 		}
 		this.questions.addAll(questions);
 	}
 	
-	public void removeQuestion(AbstractQuestion<?, ?> question) {
+	public void removeQuestion(AbstractQuestion question) {
 		if(question == null) {
 			throw new NullPointerException();
 		}

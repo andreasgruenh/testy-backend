@@ -15,10 +15,10 @@ import testy.domain.question.AbstractQuestion;
 public class DeleteMeController {
 
 	@RequestMapping(value = "/", method = RequestMethod.POST)
-	AbstractQuestion<?, ?> updateAccount(@RequestBody Set<AbstractQuestion<?, ?>> questions) {
+	AbstractQuestion updateAccount(@RequestBody Set<AbstractQuestion> questions) {
 		int counter = 0;
-		AbstractQuestion<?,?> result = null;	
-		for(AbstractQuestion<?, ?> question: questions){
+		AbstractQuestion result = null;	
+		for(AbstractQuestion question: questions){
 			System.out.println(question.getClass());
 			if(counter == 0) result = question;
 			counter++;
