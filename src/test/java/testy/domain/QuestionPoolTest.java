@@ -17,6 +17,8 @@ public class QuestionPoolTest {
 	MCQuestion question1 = new MCQuestion();
 	MCQuestion question2 = new MCQuestion();
 	
+	Subject subject = new Subject();
+	
 	@Before
 	public void setup() {
 		category1.setMaxScore(20);
@@ -47,6 +49,13 @@ public class QuestionPoolTest {
 	@Test(expected=NullPointerException.class)
 	public void removeCategory_shouldThrowNPE_whenNullIsPassed() {
 		pool.removeCategory(null);
+	}
+	
+	@Test
+	public void setSubject_shouldSetSubjectAndAddPoolToSubject() {
+		pool.setSubject(subject);
+		assertTrue("Subject should be set", pool.getSubject() == subject);
+		assertTrue("Pool should be in subjects pools", subject.getQuestionPools().contains(pool));
 	}
 
 }
