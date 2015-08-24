@@ -1,5 +1,6 @@
 package testy.domain.question.mc;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,5 +41,9 @@ public class MCQuestion extends AbstractQuestion {
 		}
 		possibleAnswers.remove(answer);
 		possibleAnswers.add(new MCPossibility(answer.getText(), answer.isCorrect()));
+	}
+	
+	public Set<MCPossibility> getPossibleAnswers() {
+		return Collections.unmodifiableSet(possibleAnswers);
 	}
 }

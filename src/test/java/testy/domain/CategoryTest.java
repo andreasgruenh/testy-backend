@@ -12,6 +12,7 @@ import org.junit.Test;
 import testy.domain.question.AbstractQuestion;
 import testy.domain.question.Category;
 import testy.domain.question.mc.MCQuestion;
+import testy.helper.UnmodifiableChecker;
 
 public class CategoryTest {
 
@@ -61,14 +62,9 @@ public class CategoryTest {
 		category.removeQuestion(null);
 	}
 	
-	@Test(expected=UnsupportedOperationException.class)
+	@Test
 	public void getQuestions_shouldReturnUnmodifableSet() {
-		MCQuestion question1 = new MCQuestion();
-		MCQuestion question2 = new MCQuestion();
-		category.addQuestion(question1);
-		
-		category.getQuestions().add(question2);
-		
+		assertTrue("Set should be unmodiable", UnmodifiableChecker.isUnmodifiable(category.getQuestions()));
 	}
 
 }

@@ -1,6 +1,7 @@
 package testy.domain;
 
 import static org.junit.Assert.*;
+import static testy.helper.UnmodifiableChecker.isUnmodifiable;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,9 +37,9 @@ public class QuestionPoolTest {
 		assertTrue("MaxScoreOfConcreteTest is not calculated properly", pool.getMaxScoreOfConcreteTest() == 40);
 	}
 	
-	@Test(expected=UnsupportedOperationException.class)
+	@Test
 	public void getCategories_shouldReturnUnmodifableSet() {
-		pool.getCategories().add(null);
+			assertTrue("Set should be unmodifiable", isUnmodifiable(pool.getCategories()));
 	}
 	
 	@Test(expected=NullPointerException.class)

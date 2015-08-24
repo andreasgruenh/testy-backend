@@ -1,6 +1,7 @@
 package testy.domain.mc;
 
 import static org.junit.Assert.*;
+import static testy.helper.UnmodifiableChecker.isUnmodifiable;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,11 @@ public class MCQuestionTest {
 		quest4.unsetCategory();
 		assertTrue("Category should be null", quest4.getCategory() == null);
 		assertFalse("Question should be added to category", category.getQuestions().contains(quest4));
+	}
+	
+	@Test
+	public void getPossibleAnswers_shouldReturnUnmodifiableSet() {
+		assertTrue("Set should be unmodifiable", isUnmodifiable(quest1.getPossibleAnswers()));
 	}
 
 }
