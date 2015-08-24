@@ -1,11 +1,15 @@
 package testy.domain;
 
-import static org.junit.Assert.*;
-import static java.util.Arrays.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import testy.domain.question.AbstractQuestion;
 import testy.domain.question.Category;
 import testy.domain.question.mc.MCQuestion;
 
@@ -36,8 +40,12 @@ public class CategoryTest {
 	
 	@Test
 	public void addAllQuestions_shouldAddAllQuestionsWithCorrectCategories() {
-		category.addAllQuestions(asList(quest2, quest3));
-		assertTrue("Category should contain Questions", category.getQuestions().containsAll(asList(quest2, quest3)));
+		Set<AbstractQuestion> questions = new HashSet<AbstractQuestion>();
+		questions.add(quest2);
+		questions.add(quest3);
+		category.addAllQuestions(questions);
+		
+		assertTrue("Category should contain Questions", category.getQuestions().containsAll(questions));
 		assertTrue("Questions should have correct category", quest2.getCategory() == category && quest3.getCategory() == category);
 	}
 	
