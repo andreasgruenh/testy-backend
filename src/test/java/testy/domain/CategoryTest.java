@@ -1,5 +1,9 @@
 package testy.domain;
 
+import static org.junit.Assert.*;
+import static java.util.Arrays.*;
+
+import org.junit.Before;
 import org.junit.Test;
 
 import testy.domain.question.Category;
@@ -8,10 +12,40 @@ import testy.domain.question.mc.MCQuestion;
 public class CategoryTest {
 
 	Category category = new Category("First Category");
+	MCQuestion quest1 = new MCQuestion();
+	MCQuestion quest2 = new MCQuestion();
+	MCQuestion quest3 = new MCQuestion();
+	MCQuestion quest4 = new MCQuestion();
+	
+	@Before
+	public void setup() {
+		category.addQuestion(quest4);
+	}
 	
 	@Test(expected=NullPointerException.class)
 	public void addQuestion_shouldThrowNPE_whenNullIsPassed() {
 		category.addQuestion(null);
+	}
+	
+	@Test
+	public void addQuestion_ShouldAddQuestionToCategoryAndCategoryToQuestion() {
+		category.addQuestion(quest1);
+		assertTrue("Category should contain Question", category.getQuestions().contains(quest1));
+		assertTrue("Question should have correct category", quest1.getCategory() == category);
+	}
+	
+	@Test
+	public void addAllQuestions_shouldAddAllQuestionsWithCorrectCategories() {
+		category.addAllQuestions(asList(quest2, quest3));
+		assertTrue("Category should contain Questions", category.getQuestions().containsAll(asList(quest2, quest3)));
+		assertTrue("Questions should have correct category", quest2.getCategory() == category && quest3.getCategory() == category);
+	}
+	
+	@Test
+	public void removeQuestion_shouldRemoveQuestionAndUnsetCategoryOfQuestion() {
+		category.removeQuestion(quest4);
+		assertFalse("Question should no longer be in category", category.getQuestions().contains(quest4));
+		assertTrue("Category of question should be null", quest4.getCategory() == null);
 	}
 	
 	@Test(expected=NullPointerException.class)

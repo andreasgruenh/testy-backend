@@ -31,6 +31,9 @@ public class TestResult {
 	@ManyToOne
 	private Subject subject;
 	
+	@ManyToOne
+	private QuestionPool questionPool;
+	
 	@OneToMany
 	private Set<AbstractAnswer<?>> checkedAnswers = new HashSet<AbstractAnswer<?>>();
 	
@@ -81,4 +84,14 @@ public class TestResult {
 		this.subject = subject;
 		
 	}
+
+	public QuestionPool getQuestionPool() {
+		return questionPool;
+	}
+
+	public void setQuestionPool(QuestionPool questionPool) {
+		this.questionPool = questionPool;
+	}
+	
+	
 }
