@@ -61,7 +61,7 @@ public class QuestionPickerTest {
 
 		for (Category cat : categories) {
 			int scoreOfCategory = 0;
-			for (AbstractQuestion<?, ?> question : cat.getQuestions()) {
+			for (AbstractQuestion question : cat.getQuestions()) {
 				scoreOfCategory += question.getMaxScore();
 			}
 			totalScore += scoreOfCategory;

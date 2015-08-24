@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @Entity
 @JsonTypeName("ImageQuestion")
-public class ImageQuestion extends AbstractQuestion<ImageQuestion, ImageAnswer>{
+public class ImageQuestion extends AbstractQuestion {
 
 	public ImageQuestion() {
 	}

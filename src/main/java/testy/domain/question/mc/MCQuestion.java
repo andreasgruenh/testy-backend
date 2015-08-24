@@ -12,13 +12,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @Entity
 @JsonTypeName("MCQuestion")
-public class MCQuestion extends AbstractQuestion<MCQuestion, MCAnswer> {
+public class MCQuestion extends AbstractQuestion {
 	
 	@OneToMany
-	private Set<MCPossibility> possibleAnswers;
+	private Set<MCPossibility> possibleAnswers = new HashSet<MCPossibility>();
 	
 	public MCQuestion() {
-		possibleAnswers = new HashSet<MCPossibility>();
 	}
 	
 	public void addAnswer(MCPossibility answer) {

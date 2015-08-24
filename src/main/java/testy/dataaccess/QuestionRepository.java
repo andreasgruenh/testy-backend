@@ -6,8 +6,8 @@ import testy.domain.question.AbstractQuestion;
 
 
 
-public interface QuestionRepository extends CrudRepository<AbstractQuestion<?, ?>, Long> {
+public interface QuestionRepository extends CrudRepository<AbstractQuestion, Long> {
 	
-	Iterable<AbstractQuestion<?, ?>> findAll();
+	Iterable<AbstractQuestion> findAll();
 	
 }

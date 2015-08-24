@@ -1,8 +1,6 @@
 package testy.domain.question;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 @JsonSubTypes({
     @Type(name="MCQuestion", value=MCQuestion.class), 
     @Type(name="ImageQuestion", value=ImageQuestion.class)})
-public abstract class AbstractQuestion<Q extends AbstractQuestion<Q, A>, A> {
+public abstract class AbstractQuestion {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -54,5 +52,16 @@ public abstract class AbstractQuestion<Q extends AbstractQuestion<Q, A>, A> {
 	
 	public int getMaxScore() {
 		return maxScore;
+	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
+		if(!category.getQuestions().contains(this)) {
+			category.addQuestion(this);
+		}
 	}
 }

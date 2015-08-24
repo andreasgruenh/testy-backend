@@ -1,10 +1,18 @@
 package testy.domain;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import testy.domain.test.TestResult;
 
 @Entity
 public class Account {
@@ -21,6 +29,9 @@ public class Account {
 	private String firstname, lastname;
 	
 	private String email;
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<TestResult> testResults = new HashSet<TestResult>();;
 
 	public Account() {
 		isAdmin = false;
@@ -73,5 +84,27 @@ public class Account {
 
 	public String getAccountName() {
 		return accountName;
+	}
+	
+	public Set<TestResult> getTestresults() {
+		return Collections.unmodifiableSet(testResults);
+	}
+	
+	public void addTestResult(TestResult result) {
+		if(result == null) {
+			throw new NullPointerException();
+		}
+		testResults.add(result);
+		result.setUser(this);
+	}
+	
+	public void removeTestResult(TestResult result) {
+		if(result == null) {
+			throw new NullPointerException();
+		}
+		testResults.remove(result);
+		if(result.getUser() != null) {
+			result.setUser(null);
+		}
 	}
 }

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,15 +23,15 @@ public class Category {
 	
 	private int maxScore;
 	
-	@OneToMany
-	private Set<AbstractQuestion<?, ?>> questions;
+	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+	private Set<AbstractQuestion> questions;
 	
 	public Category() {
-		questions = new HashSet<AbstractQuestion<?, ?>>();
+		questions = new HashSet<AbstractQuestion>();
 	}
 	
 	public Category(String name) {
-		questions = new HashSet<AbstractQuestion<?, ?>>();
+		questions = new HashSet<AbstractQuestion>();
 		this.name = name;
 	}
 	
@@ -54,29 +55,40 @@ public class Category {
 		return id;
 	}
 
-	public Set<AbstractQuestion<?, ?>> getQuestions() {
+	public Set<AbstractQuestion> getQuestions() {
 		return Collections.unmodifiableSet(questions);
 	}
 	
-	public void addQuestion(AbstractQuestion<?, ?> question) {
+	public void addQuestion(AbstractQuestion question) {
 		if(question == null) {
 			throw new NullPointerException();
 		}
 		questions.add(question);
+		if(question.getCategory() != this) {
+			question.setCategory(this);
+		}
 	}
 	
-	public void addAllQuestions(Collection<AbstractQuestion<?, ?>> questions) {
+	public void addAllQuestions(Collection<AbstractQuestion> questions) {
 		if(questions == null) {
 			throw new NullPointerException();
 		}
 		this.questions.addAll(questions);
+		for(AbstractQuestion question: questions) {
+			if(question.getCategory() != this) {
+				question.setCategory(this);
+			}
+		}
 	}
 	
-	public void removeQuestion(AbstractQuestion<?, ?> question) {
+	public void removeQuestion(AbstractQuestion question) {
 		if(question == null) {
 			throw new NullPointerException();
 		}
 		questions.remove(question);
+		if(question.getCategory() != null) {
+			question.setCategory(null);
+		}
 	}
 	
 }
