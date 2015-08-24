@@ -53,4 +53,15 @@ public abstract class AbstractQuestion {
 	public int getMaxScore() {
 		return maxScore;
 	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
+		if(!category.getQuestions().contains(this)) {
+			category.addQuestion(this);
+		}
+	}
 }

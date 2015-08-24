@@ -15,10 +15,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 public class MCQuestion extends AbstractQuestion {
 	
 	@OneToMany
-	private Set<MCPossibility> possibleAnswers;
+	private Set<MCPossibility> possibleAnswers = new HashSet<MCPossibility>();
 	
 	public MCQuestion() {
-		possibleAnswers = new HashSet<MCPossibility>();
 	}
 	
 	public void addAnswer(MCPossibility answer) {

@@ -13,9 +13,8 @@ public abstract class AbstractAnswer<Q extends AbstractQuestion> {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	protected long id;
 	
-	public abstract int validate();
-	
 	@OneToOne
 	protected Q question;
 	
+	public abstract int validate();
 }

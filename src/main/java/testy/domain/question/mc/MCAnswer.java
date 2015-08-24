@@ -1,5 +1,6 @@
 package testy.domain.question.mc;
 
+import java.util.Collections;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -33,11 +34,11 @@ public class MCAnswer extends AbstractAnswer<MCQuestion> {
 	}
 
 	public Set<MCPossibility> getCheckedPossibilities() {
-		return checkedPossibilities;
+		return Collections.unmodifiableSet(checkedPossibilities);
 	}
 
 	public Set<MCPossibility> getUncheckedPossibilities() {
-		return uncheckedPossibilities;
+		return Collections.unmodifiableSet(uncheckedPossibilities);
 	}
 	
 	@Override

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,7 +23,7 @@ public class Category {
 	
 	private int maxScore;
 	
-	@OneToMany
+	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
 	private Set<AbstractQuestion> questions;
 	
 	public Category() {
@@ -63,6 +64,9 @@ public class Category {
 			throw new NullPointerException();
 		}
 		questions.add(question);
+		if(question.getCategory() != this) {
+			question.setCategory(this);
+		}
 	}
 	
 	public void addAllQuestions(Collection<AbstractQuestion> questions) {
@@ -70,6 +74,11 @@ public class Category {
 			throw new NullPointerException();
 		}
 		this.questions.addAll(questions);
+		for(AbstractQuestion question: questions) {
+			if(question.getCategory() != this) {
+				question.setCategory(this);
+			}
+		}
 	}
 	
 	public void removeQuestion(AbstractQuestion question) {
@@ -77,6 +86,9 @@ public class Category {
 			throw new NullPointerException();
 		}
 		questions.remove(question);
+		if(question.getCategory() != null) {
+			question.setCategory(null);
+		}
 	}
 	
 }

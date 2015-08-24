@@ -1,10 +1,14 @@
 package testy.domain;
 
+import java.util.Collections;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 
 import testy.domain.test.QuestionPool;
 import testy.domain.util.Views;
@@ -22,7 +26,20 @@ public class Subject {
 	@JsonView(Views.Summary.class)
 	private String name;
 	
-	@OneToOne
-	private QuestionPool questionPool;
-	
+	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<QuestionPool> questionPools;
+
+	public Set<QuestionPool> getQuestionPools() {
+		return Collections.unmodifiableSet(questionPools);
+	}
+
+	public void addQuestionPool(QuestionPool pool) {
+		if(pool == null) {
+			throw new NullPointerException();
+		}
+		questionPools.add(pool);
+		if(pool.getSubject() == null) {
+			pool.setSubject(this);
+		}
+	}
 }

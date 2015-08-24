@@ -8,8 +8,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import testy.domain.Subject;
 import testy.domain.question.Category;
 
 @Entity
@@ -20,12 +22,14 @@ public class QuestionPool {
 	private long id;
 	
 	@OneToMany
-	private Set<Category> categories;
+	private Set<Category> categories = new HashSet<Category>();
 	
 	private int percentageToPass;
+	
+	@ManyToOne
+	private Subject subject;
 
 	public QuestionPool() {
-		categories = new HashSet<Category>();
 	}
 	
 	public int getMaxScoreOfConcreteTest() {
@@ -65,4 +69,17 @@ public class QuestionPool {
 	public Set<Category> getCategories() {
 		return Collections.unmodifiableSet(categories);
 	}
+
+	public Subject getSubject() {
+		return subject;
+	}
+
+	public void setSubject(Subject subject) {
+		this.subject = subject;
+		if(!subject.getQuestionPools().contains(this)) {
+			subject.addQuestionPool(this);
+		}
+	}
+	
+	
 }
