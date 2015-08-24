@@ -9,10 +9,10 @@ import testy.domain.question.AbstractAnswer;
 @Service
 public class TestValidator {
 
-	public int validateTest(Set<AbstractAnswer> answers) {
+	public int validateTest(Set<AbstractAnswer<?>> answers) {
 		int score = 0;
 
-		for(AbstractAnswer answer: answers) {
+		for(AbstractAnswer<?> answer: answers) {
 			score += answer.validate();
 		}
 		

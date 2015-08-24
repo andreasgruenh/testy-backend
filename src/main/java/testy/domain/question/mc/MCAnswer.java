@@ -4,17 +4,13 @@ import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 import testy.domain.question.AbstractAnswer;
 
 @Entity
-public class MCAnswer extends AbstractAnswer {
+public class MCAnswer extends AbstractAnswer<MCQuestion> {
 	
 	private static MCAnswerValidator validator = new MCAnswerValidator();
-	
-	@OneToOne
-	private final MCQuestion question;
 	
 	@OneToMany
 	private final Set<MCPossibility> checkedPossibilities;

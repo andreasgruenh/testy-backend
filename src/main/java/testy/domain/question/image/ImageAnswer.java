@@ -5,7 +5,7 @@ import javax.persistence.Entity;
 import testy.domain.question.AbstractAnswer;
 
 @Entity
-public class ImageAnswer extends AbstractAnswer {
+public class ImageAnswer extends AbstractAnswer<ImageQuestion> {
 
 	@Override
     public int validate() {

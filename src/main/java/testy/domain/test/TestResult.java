@@ -26,9 +26,9 @@ public class TestResult {
 	private Timestamp timestamp;
 	
 	@OneToMany
-	private Set<AbstractAnswer> checkedAnswers;
+	private Set<AbstractAnswer<?>> checkedAnswers;
 	
 	@OneToMany
-	private Set<AbstractAnswer> uncheckedAnswers;
+	private Set<AbstractAnswer<?>> uncheckedAnswers;
 	
 }
