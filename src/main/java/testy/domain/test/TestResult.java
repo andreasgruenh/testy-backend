@@ -1,5 +1,5 @@
 package testy.domain.test;
 
-public class ConcreteTest {
+public class TestResult {
 
 }
