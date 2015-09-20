@@ -17,7 +17,7 @@ public class CreateNewAccountFromLdapService {
 		String name = SecurityContextHolder.getContext().getAuthentication().getName().toString();
 		if(accountRepository.findByAccountName(name) == null) {
 			Account newAcc = new Account(name);
-			if(name.equals("aroth")) {
+			if(name.equals("aroth") || name.equals("issadmin")) {
 				newAcc.setAdmin(true);
 			}
 			accountRepository.save(newAcc);

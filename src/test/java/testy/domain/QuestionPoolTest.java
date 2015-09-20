@@ -1,6 +1,7 @@
 package testy.domain;
 
 import static org.junit.Assert.*;
+import static testy.helper.UnmodifiableChecker.isUnmodifiable;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +17,8 @@ public class QuestionPoolTest {
 	Category category2 = new Category("Second Category");
 	MCQuestion question1 = new MCQuestion();
 	MCQuestion question2 = new MCQuestion();
+	
+	Subject subject = new Subject();
 	
 	@Before
 	public void setup() {
@@ -34,9 +37,9 @@ public class QuestionPoolTest {
 		assertTrue("MaxScoreOfConcreteTest is not calculated properly", pool.getMaxScoreOfConcreteTest() == 40);
 	}
 	
-	@Test(expected=UnsupportedOperationException.class)
+	@Test
 	public void getCategories_shouldReturnUnmodifableSet() {
-		pool.getCategories().add(null);
+			assertTrue("Set should be unmodifiable", isUnmodifiable(pool.getCategories()));
 	}
 	
 	@Test(expected=NullPointerException.class)
@@ -47,6 +50,13 @@ public class QuestionPoolTest {
 	@Test(expected=NullPointerException.class)
 	public void removeCategory_shouldThrowNPE_whenNullIsPassed() {
 		pool.removeCategory(null);
+	}
+	
+	@Test
+	public void setSubject_shouldSetSubjectAndAddPoolToSubject() {
+		pool.setSubject(subject);
+		assertTrue("Subject should be set", pool.getSubject() == subject);
+		assertTrue("Pool should be in subjects pools", subject.getQuestionPools().contains(pool));
 	}
 
 }

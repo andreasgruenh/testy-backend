@@ -87,7 +87,7 @@ public class Category {
 		}
 		questions.remove(question);
 		if(question.getCategory() != null) {
-			question.setCategory(null);
+			question.unsetCategory();
 		}
 	}
 	

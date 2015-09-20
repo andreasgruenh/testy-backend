@@ -21,6 +21,8 @@ public class QuestionPool {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	
+	private String name;
+	
 	@OneToMany
 	private Set<Category> categories = new HashSet<Category>();
 	
@@ -29,9 +31,21 @@ public class QuestionPool {
 	@ManyToOne
 	private Subject subject;
 
+	public QuestionPool(String name) {
+		this.name = name;
+	}
+	
 	public QuestionPool() {
 	}
 	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public int getMaxScoreOfConcreteTest() {
 		int result = 0;
 		for(Category category: categories) {
@@ -80,6 +94,4 @@ public class QuestionPool {
 			subject.addQuestionPool(this);
 		}
 	}
-	
-	
 }

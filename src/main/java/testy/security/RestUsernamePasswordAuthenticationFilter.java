@@ -55,7 +55,6 @@ public class RestUsernamePasswordAuthenticationFilter extends  AbstractAuthentic
 
         // Allow subclasses to set the "details" property
         setDetails(request, authRequest);
-        System.out.println("TEEST");
         return this.getAuthenticationManager().authenticate(authRequest);
     }
 
@@ -71,7 +70,6 @@ public class RestUsernamePasswordAuthenticationFilter extends  AbstractAuthentic
      *         <code>AuthenticationManager</code>
      */
     protected String obtainPassword(HttpServletRequest request) {
-        System.out.println("TEEST");
         return request.getParameter(passwordParameter);
     }
 

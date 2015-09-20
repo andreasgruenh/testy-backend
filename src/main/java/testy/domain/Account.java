@@ -86,7 +86,7 @@ public class Account {
 		return accountName;
 	}
 	
-	public Set<TestResult> getTestresults() {
+	public Set<TestResult> getTestResults() {
 		return Collections.unmodifiableSet(testResults);
 	}
 	

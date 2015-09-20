@@ -1,6 +1,7 @@
 package testy.domain;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -26,8 +27,24 @@ public class Subject {
 	@JsonView(Views.Summary.class)
 	private String name;
 	
+	public Subject(String name) {
+		this.name = name;
+	}
+	
+	public Subject() {
+
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<QuestionPool> questionPools;
+	private Set<QuestionPool> questionPools = new HashSet<QuestionPool>();
 
 	public Set<QuestionPool> getQuestionPools() {
 		return Collections.unmodifiableSet(questionPools);

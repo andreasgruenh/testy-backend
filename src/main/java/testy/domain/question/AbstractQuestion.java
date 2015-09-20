@@ -64,4 +64,11 @@ public abstract class AbstractQuestion {
 			category.addQuestion(this);
 		}
 	}
+	
+	public void unsetCategory() {
+		if(this.category.getQuestions().contains(this)) {
+			category.removeQuestion(this);
+		}
+		this.category = null;
+	}
 }
