@@ -11,24 +11,32 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import testy.domain.Subject;
 import testy.domain.question.Category;
+import testy.domain.util.Views;
 
 @Entity
 public class QuestionPool {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@JsonView(Views.Summary.class)
 	private long id;
 	
+	@JsonView(Views.Summary.class)
 	private String name;
 	
 	@OneToMany
+	@JsonView(Views.Summary.class)
 	private Set<Category> categories = new HashSet<Category>();
 	
+	@JsonView(Views.Summary.class)
 	private int percentageToPass;
 	
 	@ManyToOne
+	@JsonView(Views.Summary.class)
 	private Subject subject;
 
 	public QuestionPool(String name) {
