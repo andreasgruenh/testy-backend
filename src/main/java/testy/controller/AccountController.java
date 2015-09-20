@@ -1,6 +1,7 @@
 package testy.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -48,6 +49,18 @@ public class AccountController {
 			.withLastname(newAccount.getLastname())
 			.build();
 		
+		accountRepo.save(account);
+	}
+	
+	@RequestMapping(value = "/{id}/isAdmin", method = RequestMethod.PUT)
+	void setIsAdmin(@PathVariable("id") long id, @RequestBody boolean isAdmin) {
+		Account loggedInAccount = accountService.getLoggedInAccount();
+		if(!loggedInAccount.isAdmin()) {
+			throw new NotEnoughPermissionsException("Only admins can set this value");
+		}
+		
+		Account account = accountRepo.findById(id);
+		account.setAdmin(isAdmin);
 		accountRepo.save(account);
 	}
 	
