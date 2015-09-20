@@ -52,7 +52,8 @@ public class AccountControllerTest {
 	@Autowired
 	private Environment env;
 
-	private MockHttpSession session;
+	private MockHttpSession userSession;
+	private MockHttpSession adminSession;
 
 	@Autowired
 	private AccountRepository accountRepo;
@@ -61,16 +62,21 @@ public class AccountControllerTest {
 	public void setUp() throws Exception {
 		mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).dispatchOptions(true)
 		        .addFilters(filterChainProxy).build();
-		session = (MockHttpSession) mockMvc
+		userSession = (MockHttpSession) mockMvc
 		        .perform(
 		                post("/login").param("username", env.getProperty("ldap.loginTester"))
 		                        .param("password", env.getProperty("ldap.loginTesterPw")))
+		        .andExpect(status().isOk()).andReturn().getRequest().getSession();
+		adminSession = (MockHttpSession) mockMvc
+		        .perform(
+		                post("/login").param("username", env.getProperty("ldap.loginAdmin")).param(
+		                        "password", env.getProperty("ldap.loginAdminPw")))
 		        .andExpect(status().isOk()).andReturn().getRequest().getSession();
 	}
 
 	@Test
 	public void GET_accountsMe_shouldReturnTheCorrectAccountObject() throws Exception {
-		mockMvc.perform(get("/accounts/me").session(session)).andExpect(status().isOk())
+		mockMvc.perform(get("/accounts/me").session(userSession)).andExpect(status().isOk())
 		        .andExpect(content().contentType("application/json;charset=UTF-8"))
 		        .andExpect(jsonPath("$.accountName", is(env.getProperty("ldap.loginTester"))));
 	}
@@ -78,7 +84,7 @@ public class AccountControllerTest {
 	@Test
 	public void GET_base_shouldReturnExpectedString() throws Exception {
 		final String expectedString = "Backend is running!";
-		mockMvc.perform(get("/").session(session)).andExpect(status().isOk())
+		mockMvc.perform(get("/").session(userSession)).andExpect(status().isOk())
 		        .andExpect(content().string(expectedString));
 	}
 
@@ -89,7 +95,7 @@ public class AccountControllerTest {
 
 		final String firstname = "Andreas", lastname = "Roth", email = "Andreas.Roth@paul-consultants.de";
 
-		String jsonAccount = mockMvc.perform(get("/accounts/me").session(session)).andReturn()
+		String jsonAccount = mockMvc.perform(get("/accounts/me").session(userSession)).andReturn()
 		        .getResponse().getContentAsString();
 		Account account = mapper.readValue(jsonAccount, Account.class);
 
@@ -100,11 +106,11 @@ public class AccountControllerTest {
 
 		jsonAccount = mapper.writeValueAsString(account);
 		mockMvc.perform(
-		        post("/accounts/me").session(session).contentType(MediaType.APPLICATION_JSON)
+		        post("/accounts/me").session(userSession).contentType(MediaType.APPLICATION_JSON)
 		                .content(jsonAccount)).andExpect(status().isOk());
 
-		String newJsonAccount = mockMvc.perform(get("/accounts/me").session(session)).andReturn()
-		        .getResponse().getContentAsString();
+		String newJsonAccount = mockMvc.perform(get("/accounts/me").session(userSession))
+		        .andReturn().getResponse().getContentAsString();
 		Account newAccount = mapper.readValue(newJsonAccount, Account.class);
 
 		assertTrue("Firstname should be postet firstname",
@@ -126,7 +132,7 @@ public class AccountControllerTest {
 
 		String jsonAccount = mapper.writeValueAsString(account);
 		mockMvc.perform(
-		        post("/accounts/me").session(session).contentType(MediaType.APPLICATION_JSON)
+		        post("/accounts/me").session(userSession).contentType(MediaType.APPLICATION_JSON)
 		                .content(jsonAccount)).andExpect(status().isForbidden());
 	}
 
@@ -138,10 +144,10 @@ public class AccountControllerTest {
 		accountRepo.save(new Account("marcel"));
 
 		ObjectMapper mapper = new ObjectMapper();
-		MockHttpServletResponse response = mockMvc.perform(get("/accounts/").session(session))
+		MockHttpServletResponse response = mockMvc.perform(get("/accounts/").session(userSession))
 		        .andExpect(status().isOk()).andReturn().getResponse();
 		Account[] accounts = mapper.readValue(response.getContentAsString(), Account[].class);
-		assertTrue("Response should contain exactly 4 object", accounts.length == 4);
+		assertTrue("Response should contain exactly 4 object", accounts.length == 5);
 	}
 
 	@Test
@@ -149,25 +155,39 @@ public class AccountControllerTest {
 
 		ObjectMapper mapper = new ObjectMapper();
 
-		String accountString = mockMvc.perform(get("/accounts/me").session(session))
+		String accountString = mockMvc.perform(get("/accounts/me").session(userSession))
 		        .andExpect(status().isOk())
 		        .andExpect(content().contentType("application/json;charset=UTF-8")).andReturn()
 		        .getResponse().getContentAsString();
 
 		Account account = mapper.readValue(accountString, Account.class);
 
-		if (account.isAdmin()) {
-			mockMvc.perform(
-			        put("/accounts/" + account.getId() + "/isAdmin").session(session)
-			                .contentType(MediaType.APPLICATION_JSON)
-			                .content(mapper.writeValueAsString(false))).andExpect(status().isOk());
-		} else {
-			mockMvc.perform(
-			        put("/accounts/" + account.getId() + "/isAdmin").session(session)
-			                .contentType(MediaType.APPLICATION_JSON)
-			                .content(mapper.writeValueAsString(false))).andExpect(status().isForbidden());
-		}
-
+		mockMvc.perform(
+		        put("/accounts/" + account.getId() + "/isAdmin").session(userSession)
+		                .contentType(MediaType.APPLICATION_JSON)
+		                .content(mapper.writeValueAsString(false))).andExpect(
+		        status().isForbidden());
 	}
 
+	@Test
+	public void PUT_idIsAdmin_withAdminPermissions_shouldUpdateAccount() throws Exception {
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		String accountString = mockMvc.perform(get("/accounts/me").session(userSession))
+		        .andExpect(status().isOk())
+		        .andExpect(content().contentType("application/json;charset=UTF-8")).andReturn()
+		        .getResponse().getContentAsString();
+
+		Account userAccount = mapper.readValue(accountString, Account.class);
+
+		mockMvc.perform(
+		        put("/accounts/" + userAccount.getId() + "/isAdmin").session(adminSession)
+		                .contentType(MediaType.APPLICATION_JSON)
+		                .content(mapper.writeValueAsString(true))).andExpect(status().isOk());
+
+		mockMvc.perform(get("/accounts/me").session(userSession)).andExpect(status().isOk())
+		        .andExpect(content().contentType("application/json;charset=UTF-8"))
+		        .andExpect(jsonPath("$.admin", is(true)));
+	}
 }
