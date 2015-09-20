@@ -70,7 +70,6 @@ public class RestUsernamePasswordAuthenticationFilter extends  AbstractAuthentic
      *         <code>AuthenticationManager</code>
      */
     protected String obtainPassword(HttpServletRequest request) {
-        System.out.println("TEEST");
         return request.getParameter(passwordParameter);
     }
 
