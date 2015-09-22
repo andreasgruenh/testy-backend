@@ -31,6 +31,7 @@ import testy.Application;
 import testy.dataaccess.AccountRepository;
 import testy.domain.Account;
 import testy.domain.util.AccountBuilder;
+import testy.helper.SessionEstablisher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -51,6 +52,9 @@ public class AccountControllerTest {
 
 	@Autowired
 	private Environment env;
+	
+	@Autowired
+	private SessionEstablisher sessionEstablisher;
 
 	private MockHttpSession userSession;
 	private MockHttpSession adminSession;
@@ -62,16 +66,9 @@ public class AccountControllerTest {
 	public void setUp() throws Exception {
 		mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).dispatchOptions(true)
 		        .addFilters(filterChainProxy).build();
-		userSession = (MockHttpSession) mockMvc
-		        .perform(
-		                post("/login").param("username", env.getProperty("ldap.loginTester"))
-		                        .param("password", env.getProperty("ldap.loginTesterPw")))
-		        .andExpect(status().isOk()).andReturn().getRequest().getSession();
-		adminSession = (MockHttpSession) mockMvc
-		        .perform(
-		                post("/login").param("username", env.getProperty("ldap.loginAdmin")).param(
-		                        "password", env.getProperty("ldap.loginAdminPw")))
-		        .andExpect(status().isOk()).andReturn().getRequest().getSession();
+		userSession = sessionEstablisher.getUserSessionWith(mockMvc);
+
+		adminSession = sessionEstablisher.getAdminSessionWith(mockMvc);
 	}
 
 	@Test

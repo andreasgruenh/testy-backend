@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -29,6 +28,7 @@ import testy.Application;
 import testy.dataaccess.SubjectRepository;
 import testy.domain.Subject;
 import testy.domain.test.QuestionPool;
+import testy.helper.SessionEstablisher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -48,7 +48,7 @@ public class SubjectControllerTest {
 	private WebApplicationContext webAppContext;
 
 	@Autowired
-	private Environment env;
+	private SessionEstablisher sessionEstablisher;
 
 	private MockHttpSession userSession;
 	private MockHttpSession adminSession;
@@ -67,17 +67,9 @@ public class SubjectControllerTest {
 		mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).dispatchOptions(true)
 		        .addFilters(filterChainProxy).build();
 
-		userSession = (MockHttpSession) mockMvc
-		        .perform(
-		                post("/login").param("username", env.getProperty("ldap.loginTester"))
-		                        .param("password", env.getProperty("ldap.loginTesterPw")))
-		        .andExpect(status().isOk()).andReturn().getRequest().getSession();
+		userSession = sessionEstablisher.getUserSessionWith(mockMvc);
 
-		adminSession = (MockHttpSession) mockMvc
-		        .perform(
-		                post("/login").param("username", env.getProperty("ldap.loginAdmin")).param(
-		                        "password", env.getProperty("ldap.loginAdminPw")))
-		        .andExpect(status().isOk()).andReturn().getRequest().getSession();
+		adminSession = sessionEstablisher.getAdminSessionWith(mockMvc);
 
 		subject1 = new Subject("Fach1");
 		Subject subject2 = new Subject("Fach2");
