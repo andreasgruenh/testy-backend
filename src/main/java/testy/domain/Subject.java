@@ -35,6 +35,12 @@ public class Subject {
 
 	}
 	
+	@JsonView(Views.Summary.class)
+	public long getId() {
+		return id;
+	}
+	
+	@JsonView(Views.Summary.class)
 	public String getName() {
 		return name;
 	}

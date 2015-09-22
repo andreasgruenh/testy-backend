@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -28,6 +27,8 @@ import org.springframework.web.context.WebApplicationContext;
 import testy.Application;
 import testy.dataaccess.SubjectRepository;
 import testy.domain.Subject;
+import testy.domain.test.QuestionPool;
+import testy.helper.SessionEstablisher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -47,7 +48,7 @@ public class SubjectControllerTest {
 	private WebApplicationContext webAppContext;
 
 	@Autowired
-	private Environment env;
+	private SessionEstablisher sessionEstablisher;
 
 	private MockHttpSession userSession;
 	private MockHttpSession adminSession;
@@ -55,34 +56,38 @@ public class SubjectControllerTest {
 	@Autowired
 	private SubjectRepository subjectRepo;
 
+	private Subject subject1;
+	long subject1Id;
+
+	ObjectMapper mapper = new ObjectMapper();
+
 	@Before
 	public void setUp() throws Exception {
 
 		mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).dispatchOptions(true)
 		        .addFilters(filterChainProxy).build();
 
-		userSession = (MockHttpSession) mockMvc
-		        .perform(
-		                post("/login").param("username", env.getProperty("ldap.loginTester"))
-		                        .param("password", env.getProperty("ldap.loginTesterPw")))
-		        .andExpect(status().isOk()).andReturn().getRequest().getSession();
+		userSession = sessionEstablisher.getUserSessionWith(mockMvc);
 
-		adminSession = (MockHttpSession) mockMvc
-		        .perform(
-		                post("/login").param("username", env.getProperty("ldap.loginAdmin")).param(
-		                        "password", env.getProperty("ldap.loginAdminPw")))
-		        .andExpect(status().isOk()).andReturn().getRequest().getSession();
+		adminSession = sessionEstablisher.getAdminSessionWith(mockMvc);
 
-		Subject subject1 = new Subject("Fach1");
+		subject1 = new Subject("Fach1");
 		Subject subject2 = new Subject("Fach2");
 		Subject subject3 = new Subject("Fach3");
 
+		QuestionPool pool1 = new QuestionPool("pool1");
+		QuestionPool pool2 = new QuestionPool("pool2");
+
 		subjectRepo.save(Arrays.asList(subject1, subject2, subject3));
+
+		subject1.addQuestionPool(pool1);
+		subject1.addQuestionPool(pool2);
+		subject1 = subjectRepo.save(subject1);
+		subject1Id = subject1.getId();
 	}
 
 	@Test
 	public void GET_subjects_shouldReturnTheCorrectAmmountOfSubjects() throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
 
 		MockHttpServletResponse response = mockMvc.perform(get("/subjects/").session(userSession))
 		        .andExpect(status().isOk()).andReturn().getResponse();
@@ -95,8 +100,6 @@ public class SubjectControllerTest {
 	@Test
 	public void POST_subjects_withoutAdminPermissions_shouldReturn403() throws Exception {
 
-		ObjectMapper mapper = new ObjectMapper();
-
 		Subject newSubject = new Subject("Fach4");
 
 		mockMvc.perform(
@@ -108,17 +111,57 @@ public class SubjectControllerTest {
 	@Test
 	public void POST_subjects_withPermissions_shouldCreateTheNewSubject() throws Exception {
 
-		ObjectMapper mapper = new ObjectMapper();
-
 		Subject newSubject = new Subject("Fach4");
 
-		MockHttpServletResponse response = mockMvc.perform(
-		        post("/subjects/").session(adminSession).contentType(MediaType.APPLICATION_JSON)
-		                .content(mapper.writeValueAsString(newSubject))).andExpect(
-		        status().isOk()).andReturn().getResponse();
-		
+		MockHttpServletResponse response = mockMvc
+		        .perform(
+		                post("/subjects/").session(adminSession)
+		                        .contentType(MediaType.APPLICATION_JSON)
+		                        .content(mapper.writeValueAsString(newSubject)))
+		        .andExpect(status().isCreated()).andReturn().getResponse();
+
 		Subject createdSubject = mapper.readValue(response.getContentAsString(), Subject.class);
-		assertTrue("Name of new subject should be equal to posted name", createdSubject.getName().equals(newSubject.getName()));
+		assertTrue("Name of new subject should be equal to posted name", createdSubject.getName()
+		        .equals(newSubject.getName()));
 	}
 
+	@Test
+	public void GET_subjectsIdPools_shouldReturnAllQuestionPools() throws Exception {
+
+		MockHttpServletResponse response = mockMvc
+		        .perform(get("/subjects/" + subject1Id + "/pools").session(userSession))
+		        .andExpect(status().isOk()).andReturn().getResponse();
+		
+		QuestionPool[] pools = mapper
+		        .readValue(response.getContentAsString(), QuestionPool[].class);
+		assertTrue("Ammount of questionPools not correct", pools.length == 2);
+	}
+
+	@Test
+	public void POST_subjectsIdPools_withWrongPermissions_shouldReturn403() throws Exception {
+
+		mockMvc.perform(post("/subjects/" + subject1Id + "/pools").session(userSession).param(
+		        "name", "new Pool"));
+	}
+
+	@Test
+	public void POST_subjectsIdPools_withCorrectPermissions_shouldCreatePoolWithCorrectName()
+	        throws Exception {
+
+		QuestionPool newPool = new QuestionPool("newPool");
+
+		MockHttpServletResponse response = mockMvc
+		        .perform(
+		                post("/subjects/" + subject1Id + "/pools").session(adminSession).param(
+		                        "name", newPool.getName())).andExpect(status().isCreated()).andReturn()
+		        .getResponse();
+
+		QuestionPool createdPool = mapper.readValue(response.getContentAsString(),
+		        QuestionPool.class);
+
+		assertTrue("Name of created pool should equal posted pool, it is '" + createdPool.getName() + "' but expected was '" + newPool.getName() + "'",
+		        newPool.getName().equals(createdPool.getName()));
+		assertTrue("Subject should be set correctly",
+		        createdPool.getSubject().getId() == subject1Id);
+	}
 }
