@@ -34,7 +34,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertTrue;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 @Transactional
 @IntegrationTest
-public class QuestionPoolControllerTest {
+public class CategoryControllerTest {
 
 	private MockMvc mockMvc;
 
@@ -104,88 +104,67 @@ public class QuestionPoolControllerTest {
 	}
 
 	@Test
-	public void GET_poolsId_withoutPermissionsShouldReturn403() throws Exception {
-
-		mockMvc.perform(get("/pools/" + pool1.getId()).session(userSession)).andExpect(
-		        status().isForbidden());
-	}
-
-	@Test
-	public void GET_poolsId_withPermissions_shouldReturnCorrectPool() throws Exception {
-
-		MockHttpServletResponse response = mockMvc
-		        .perform(get("/pools/" + pool1.getId()).session(adminSession))
-		        .andExpect(status().isOk()).andReturn().getResponse();
-
-		QuestionPool returnedPool = mapper.readValue(response.getContentAsString(),
-		        QuestionPool.class);
-
-		assertTrue("Name of pool should be returned", returnedPool.getName()
-		        .equals(pool1.getName()));
-		assertTrue("Id of pool should be returned", returnedPool.getId() == pool1.getId());
-		assertTrue("Categories should be returned", returnedPool.getCategories().size() == 1);
-		assertTrue("Questions should be returned", returnedPool.getCategories().iterator().next()
-		        .getQuestions().size() == 2);
-	}
-
-	@Test
-	public void POST_poolsIdCategories_withoutAdminPermissions_shouldReturn403() throws Exception {
+	public void PUT_id_withoutAdminPermissions_shouldReturn403() throws Exception {
 
 		// arrange
-		Category newCat = new Category("New category");
-		newCat.setMaxScore(50);
+		Category changedCat = new Category("Changed Category");
+		changedCat.setMaxScore(40);
 
+		// act
 		mockMvc.perform(
-		        post("/pools/" + pool1.getId() + "/categories").session(userSession)
+		        put("/categories/" + cat1.getId()).session(userSession)
 		                .contentType(MediaType.APPLICATION_JSON)
-		                .content(mapper.writeValueAsString(newCat))).andExpect(
+		                .content(mapper.writeValueAsString(changedCat))).andExpect(
 		        status().isForbidden());
 	}
 
 	@Test
-	public void POST_poolsIdCategories_withAdminPermissions_shouldReturnCreatedCategory()
+	public void PUT_id_withAdminPermissions_shouldReturnChangedCategory()
 	        throws Exception {
 
 		// arrange
-		Category newCat = new Category("New category");
-		newCat.setMaxScore(50);
+		Category changedCat = new Category("Changed Category");
+		changedCat.setMaxScore(40);
 
 		// act
 		MockHttpServletResponse response = mockMvc
 		        .perform(
-		                post("/pools/" + pool1.getId() + "/categories").session(adminSession)
-		                        .contentType(MediaType.APPLICATION_JSON)
-		                        .content(mapper.writeValueAsString(newCat)))
+		                put("/categories/" + cat1.getId())
+		                        .session(adminSession).contentType(MediaType.APPLICATION_JSON)
+		                        .content(mapper.writeValueAsString(changedCat)))
 		        .andExpect(status().isOk()).andReturn().getResponse();
 
 		// assert
 		Category actualCategory = mapper.readValue(response.getContentAsString(), Category.class);
 		assertTrue("Name of category should be returned",
-		        actualCategory.getName().equals(newCat.getName()));
+		        actualCategory.getName().equals(changedCat.getName()));
 		assertTrue("Max Score of category should be returned",
-		        actualCategory.getMaxScore() == newCat.getMaxScore());
+		        actualCategory.getMaxScore() == changedCat.getMaxScore());
 	}
 
 	@Test
-	public void POST_poolsIdCategories_withAdminPermissions_shouldAddTheCategory() throws Exception {
+	public void PUT_id_withAdminPermissions_shouldSaveNewCategory()
+	        throws Exception {
 
 		// arrange
-		Category newCat = new Category("New category");
-		newCat.setMaxScore(50);
+		Category changedCat = new Category("Changed Category");
+		changedCat.setMaxScore(40);
 
 		// act
-		mockMvc.perform(post("/pools/" + pool1.getId() + "/categories").session(adminSession)
-		        .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(newCat)));
+		mockMvc.perform(
+		        put("/categories/" + cat1.getId())
+		                .session(adminSession).contentType(MediaType.APPLICATION_JSON)
+		                .content(mapper.writeValueAsString(changedCat))).andExpect(status().isOk())
+		        .andReturn().getResponse();
 
 		// assert
 		MockHttpServletResponse response = mockMvc
 		        .perform(get("/pools/" + pool1.getId()).session(adminSession))
 		        .andExpect(status().isOk()).andReturn().getResponse();
 
-		QuestionPool returnedPool = mapper.readValue(response.getContentAsString(),
-		        QuestionPool.class);
-		assertTrue("Ammout of categories should have increased", returnedPool.getCategories()
-		        .size() == 2);
-
+		Category actualCat = mapper.readValue(response.getContentAsString(),
+		        QuestionPool.class).getCategories().iterator().next();
+		assertTrue("Category name should have been updated", actualCat.getName().equals(changedCat.getName()));
+		assertTrue("Category maxScore should have been updated", actualCat.getMaxScore() == changedCat.getMaxScore());
 	}
 }

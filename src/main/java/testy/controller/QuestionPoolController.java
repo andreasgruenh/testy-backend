@@ -61,7 +61,6 @@ public class QuestionPoolController {
 		newCategory = catRepo.save(newCategory);
 		pool.addCategory(newCategory);
 		questionPoolRepo.save(pool);
-		return newCategory;
-		
+		return newCategory;	
 	}
 }
