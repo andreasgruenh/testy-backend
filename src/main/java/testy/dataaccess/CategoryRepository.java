@@ -1,0 +1,17 @@
+package testy.dataaccess;
+
+import java.util.Collection;
+
+import org.springframework.data.repository.CrudRepository;
+
+import testy.domain.question.Category;
+
+
+
+public interface CategoryRepository extends CrudRepository<Category, Long> {
+	
+	Collection<Category> findAll();
+	
+	Category findById(long id);
+	
+}

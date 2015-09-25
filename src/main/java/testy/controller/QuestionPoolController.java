@@ -2,14 +2,17 @@ package testy.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import testy.controller.exception.NotEnoughPermissionsException;
 import testy.dataaccess.AccountRepository;
+import testy.dataaccess.CategoryRepository;
 import testy.dataaccess.QuestionPoolRepository;
 import testy.dataaccess.SubjectRepository;
+import testy.domain.question.Category;
 import testy.domain.test.QuestionPool;
 import testy.domain.util.Views;
 import testy.security.service.CurrentAccountService;
@@ -32,6 +35,9 @@ public class QuestionPoolController {
 	@Autowired
 	QuestionPoolRepository questionPoolRepo;
 	
+	@Autowired
+	CategoryRepository catRepo;
+	
 	@JsonView(Views.Summary.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public QuestionPool getQuestionPool(@PathVariable("id") long id) {
@@ -39,5 +45,23 @@ public class QuestionPoolController {
 			throw new NotEnoughPermissionsException("Only admins may see QuestionPoolDetails");
 		}
 		return questionPoolRepo.findById(id);
+	}
+	
+	@RequestMapping(value = "/{id}/categories", method = RequestMethod.POST)
+	public Category createNewCategory(@PathVariable("id") long id, @RequestBody Category postedCategory) {
+		if(!accountService.getLoggedInAccount().isAdmin()) {
+			throw new NotEnoughPermissionsException("Only admins may add new categories");
+		}
+		
+		Category newCategory = new Category();
+		newCategory.setName(postedCategory.getName());
+		newCategory.setMaxScore(postedCategory.getMaxScore());
+		QuestionPool pool = questionPoolRepo.findById(id);
+		
+		newCategory = catRepo.save(newCategory);
+		pool.addCategory(newCategory);
+		questionPoolRepo.save(pool);
+		return newCategory;
+		
 	}
 }

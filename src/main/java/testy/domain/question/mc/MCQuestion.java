@@ -8,14 +8,17 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
 import testy.domain.question.AbstractQuestion;
+import testy.domain.util.Views;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 @JsonTypeName("MCQuestion")
 public class MCQuestion extends AbstractQuestion {
 	
 	@OneToMany
+	@JsonView(Views.Summary.class)
 	private Set<MCPossibility> possibleAnswers = new HashSet<MCPossibility>();
 	
 	public MCQuestion() {

@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.web.FilterChainProxy;
@@ -20,15 +21,21 @@ import testy.Application;
 import testy.dataaccess.QuestionPoolRepository;
 import testy.dataaccess.SubjectRepository;
 import testy.domain.Subject;
+import testy.domain.question.AbstractQuestion;
 import testy.domain.question.Category;
+import testy.domain.question.mc.MCQuestion;
 import testy.domain.test.QuestionPool;
 import testy.helper.SessionEstablisher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static java.util.Arrays.asList;
+
 import static org.junit.Assert.assertTrue;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -82,6 +89,12 @@ public class QuestionPoolControllerTest {
 		pool1 = new QuestionPool("pool1");
 		cat1 = new Category("cat1");
 		cat1.setMaxScore(20);
+
+		AbstractQuestion quest1 = new MCQuestion();
+		quest1.setQuestionString("Frage 1");
+		AbstractQuestion quest2 = new MCQuestion();
+		quest2.setQuestionString("Frage 2");
+		cat1.addAllQuestions(asList(quest1, quest2));
 		pool1.addCategory(cat1);
 		pool1 = poolRepo.save(pool1);
 
@@ -99,13 +112,47 @@ public class QuestionPoolControllerTest {
 	@Test
 	public void GET_poolsId_withPermissionsShouldReturnCorrectPool() throws Exception {
 
-		MockHttpServletResponse response = mockMvc.perform(get("/pools/" + pool1.getId()).session(adminSession)).andExpect(
-		        status().isOk()).andReturn().getResponse();
-		
-		QuestionPool returnedPool = mapper.readValue(response.getContentAsString(), QuestionPool.class);
-		
-		assertTrue("Name of pool should be returned", returnedPool.getName().equals(pool1.getName()));
+		MockHttpServletResponse response = mockMvc
+		        .perform(get("/pools/" + pool1.getId()).session(adminSession))
+		        .andExpect(status().isOk()).andReturn().getResponse();
+
+		QuestionPool returnedPool = mapper.readValue(response.getContentAsString(),
+		        QuestionPool.class);
+
+		assertTrue("Name of pool should be returned", returnedPool.getName()
+		        .equals(pool1.getName()));
 		assertTrue("Id of pool should be returned", returnedPool.getId() == pool1.getId());
 		assertTrue("Categories should be returned", returnedPool.getCategories().size() == 1);
+		assertTrue("Questions should be returned", returnedPool.getCategories().iterator().next()
+		        .getQuestions().size() == 2);
+	}
+
+	@Test
+	public void POST_poolsIdCategories_withoutAdminPermissionsShouldReturn403() throws Exception {
+
+		// arrange
+		Category newCat = new Category("New category");
+		newCat.setMaxScore(50);
+
+		mockMvc.perform(post("/pools/" + pool1.getId() + "/categories").session(userSession)
+		        .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(newCat))).andExpect(status().isForbidden());
+	}
+	
+	@Test
+	public void POST_poolsIdCategories_withAdminPermissionsShouldReturnCreatedCategory() throws Exception {
+
+		// arrange
+		Category newCat = new Category("New category");
+		newCat.setMaxScore(50);
+
+		MockHttpServletResponse response = mockMvc.perform(post("/pools/" + pool1.getId() + "/categories").session(adminSession)
+		        .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(newCat))).andExpect(status().isOk()).andReturn().getResponse();
+		
+		Category actualCategory = mapper.readValue(response.getContentAsString(), Category.class);
+		System.out.println(response.getContentAsString());
+		assertTrue("Name of category should be returned", actualCategory.getName()
+		        .equals(newCat.getName()));
+		assertTrue("Max Score of category should be returned", actualCategory.getMaxScore() == 50);
+		
 	}
 }

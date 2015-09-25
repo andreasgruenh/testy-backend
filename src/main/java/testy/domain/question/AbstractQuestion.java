@@ -8,8 +8,10 @@ import javax.persistence.OneToOne;
 
 import testy.domain.question.image.ImageQuestion;
 import testy.domain.question.mc.MCQuestion;
+import testy.domain.util.Views;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
@@ -23,13 +25,16 @@ public abstract class AbstractQuestion {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@JsonView(Views.Summary.class)
 	protected long id;
 	
 	@OneToOne
 	private Category category;
 	
+	@JsonView(Views.Summary.class)
 	protected String questionString;
 	
+	@JsonView(Views.Summary.class)
 	protected final int maxScore = 10;
 	
 	public long getId() {
