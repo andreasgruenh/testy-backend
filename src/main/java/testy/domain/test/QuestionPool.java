@@ -12,11 +12,12 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import com.fasterxml.jackson.annotation.JsonView;
-
 import testy.domain.Subject;
 import testy.domain.question.Category;
 import testy.domain.util.Views;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 public class QuestionPool {
@@ -97,6 +98,7 @@ public class QuestionPool {
 		return subject;
 	}
 
+	@JsonIgnore
 	public void setSubject(Subject subject) {
 		this.subject = subject;
 		if(!subject.getQuestionPools().contains(this)) {

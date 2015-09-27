@@ -156,7 +156,7 @@ public class QuestionPoolControllerTest {
 		                post("/pools/" + pool1.getId() + "/categories").session(adminSession)
 		                        .contentType(MediaType.APPLICATION_JSON)
 		                        .content(mapper.writeValueAsString(newCat)))
-		        .andExpect(status().isOk()).andReturn().getResponse();
+		        .andExpect(status().isCreated()).andReturn().getResponse();
 
 		// assert
 		Category actualCategory = mapper.readValue(response.getContentAsString(), Category.class);
@@ -184,8 +184,7 @@ public class QuestionPoolControllerTest {
 
 		QuestionPool returnedPool = mapper.readValue(response.getContentAsString(),
 		        QuestionPool.class);
-		assertTrue("Ammout of categories should have increased", returnedPool.getCategories()
-		        .size() == 2);
-
+		assertTrue("Ammout of categories should have increased, expected: 2 but was: "
+		        + returnedPool.getCategories().size() + "\n" + response.getContentAsString(), returnedPool.getCategories().size() == 2);
 	}
 }

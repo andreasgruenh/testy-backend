@@ -1,10 +1,5 @@
 package testy.controller;
 
-import static org.junit.Assert.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.Arrays;
 
 import org.junit.Before;
@@ -31,6 +26,13 @@ import testy.domain.test.QuestionPool;
 import testy.helper.SessionEstablisher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.junit.Assert.assertTrue;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -70,14 +72,12 @@ public class SubjectControllerTest {
 		userSession = sessionEstablisher.getUserSessionWith(mockMvc);
 
 		adminSession = sessionEstablisher.getAdminSessionWith(mockMvc);
-
 		subject1 = new Subject("Fach1");
 		Subject subject2 = new Subject("Fach2");
 		Subject subject3 = new Subject("Fach3");
 
 		QuestionPool pool1 = new QuestionPool("pool1");
 		QuestionPool pool2 = new QuestionPool("pool2");
-
 		subjectRepo.save(Arrays.asList(subject1, subject2, subject3));
 
 		subject1.addQuestionPool(pool1);
@@ -94,7 +94,7 @@ public class SubjectControllerTest {
 
 		Subject[] subjects = mapper.readValue(response.getContentAsString(), Subject[].class);
 
-		assertTrue("Response should contain exactly 4 object", subjects.length == 3);
+		assertTrue("Response should contain exactly 3 object", subjects.length == 3);
 	}
 
 	@Test
@@ -104,8 +104,8 @@ public class SubjectControllerTest {
 
 		mockMvc.perform(
 		        post("/subjects/").session(userSession).contentType(MediaType.APPLICATION_JSON)
-		                .content(mapper.writeValueAsString(newSubject))).andExpect(
-		        status().isForbidden());
+		                .content(mapper.writeValueAsString(newSubject)))
+		        .andExpect(status().isForbidden()).andReturn().getRequest();
 	}
 
 	@Test
@@ -131,7 +131,7 @@ public class SubjectControllerTest {
 		MockHttpServletResponse response = mockMvc
 		        .perform(get("/subjects/" + subject1Id + "/pools").session(userSession))
 		        .andExpect(status().isOk()).andReturn().getResponse();
-		
+
 		QuestionPool[] pools = mapper
 		        .readValue(response.getContentAsString(), QuestionPool[].class);
 		assertTrue("Ammount of questionPools not correct", pools.length == 2);
@@ -140,28 +140,65 @@ public class SubjectControllerTest {
 	@Test
 	public void POST_subjectsIdPools_withWrongPermissions_shouldReturn403() throws Exception {
 
-		mockMvc.perform(post("/subjects/" + subject1Id + "/pools").session(userSession).param(
-		        "name", "new Pool"));
+		// arrange
+		QuestionPool newPool = new QuestionPool("newPool");
+		newPool.setPercentageToPass(200);
+
+		mockMvc.perform(
+		        post("/subjects/" + subject1.getId() + "/pools").session(userSession)
+		                .contentType(MediaType.APPLICATION_JSON)
+		                .content(mapper.writeValueAsString(newPool))).andExpect(
+		        status().isForbidden());
 	}
 
 	@Test
-	public void POST_subjectsIdPools_withCorrectPermissions_shouldCreatePoolWithCorrectName()
+	public void POST_subjectsIdPools_withCorrectPermissions_shouldReturnCreatedPool()
 	        throws Exception {
 
+		// arrange
 		QuestionPool newPool = new QuestionPool("newPool");
+		newPool.setPercentageToPass(200);
 
+		// act
 		MockHttpServletResponse response = mockMvc
 		        .perform(
-		                post("/subjects/" + subject1Id + "/pools").session(adminSession).param(
-		                        "name", newPool.getName())).andExpect(status().isCreated()).andReturn()
-		        .getResponse();
+		                post("/subjects/" + subject1.getId() + "/pools").session(adminSession)
+		                        .contentType(MediaType.APPLICATION_JSON)
+		                        .content(mapper.writeValueAsString(newPool)))
+		        .andExpect(status().isCreated()).andReturn().getResponse();
 
+		// assert
 		QuestionPool createdPool = mapper.readValue(response.getContentAsString(),
 		        QuestionPool.class);
-
-		assertTrue("Name of created pool should equal posted pool, it is '" + createdPool.getName() + "' but expected was '" + newPool.getName() + "'",
+		assertTrue("Name of created pool should equal posted pool, it is '" + createdPool.getName()
+		        + "' but expected was '" + newPool.getName() + "'",
 		        newPool.getName().equals(createdPool.getName()));
+		assertTrue("Percentage to pass should be set correctly",
+		        createdPool.getPercentageToPass() == newPool.getPercentageToPass());
 		assertTrue("Subject should be set correctly",
 		        createdPool.getSubject().getId() == subject1Id);
+	}
+
+	@Test
+	public void POST_subjectsIdPools_withCorrectPermissions_shouldCreatePool() throws Exception {
+
+		// arrange
+		QuestionPool newPool = new QuestionPool("newPool");
+		newPool.setPercentageToPass(200);
+		mockMvc.perform(
+		        post("/subjects/" + subject1.getId() + "/pools").session(adminSession)
+		                .contentType(MediaType.APPLICATION_JSON)
+		                .content(mapper.writeValueAsString(newPool))).andExpect(
+		        status().isCreated());
+
+		// act
+		MockHttpServletResponse response = mockMvc
+		        .perform(get("/subjects/" + subject1Id + "/pools").session(userSession))
+		        .andExpect(status().isOk()).andReturn().getResponse();
+
+		// assert
+		QuestionPool[] pools = mapper
+		        .readValue(response.getContentAsString(), QuestionPool[].class);
+		assertTrue("Ammount of questionPools not correct", pools.length == 3);
 	}
 }

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -68,16 +67,16 @@ public class SubjectController {
 	@JsonView(Views.Summary.class)
 	@ResponseStatus(HttpStatus.CREATED)
 	@RequestMapping(value = "/{id}/pools", method = RequestMethod.POST)
-	public QuestionPool createQuestionPool(@PathVariable("id") long id, @RequestParam(value="name") String name) {
+	public QuestionPool createQuestionPool(@PathVariable("id") long id, @RequestBody QuestionPool postedPool) {
 		if(!accountService.getLoggedInAccount().isAdmin()) {
 			throw new NotEnoughPermissionsException("Only admins may create new question pools");
 		}
+		QuestionPool newPool = new QuestionPool(postedPool.getName());
+		newPool.setPercentageToPass(postedPool.getPercentageToPass());
 		Subject subject = subjectRepo.findById(id);
-		QuestionPool pool = new QuestionPool(name);
-		pool = questionPoolRepo.save(pool);
-		subject.addQuestionPool(pool);
+		subject.addQuestionPool(newPool);
+		newPool = questionPoolRepo.save(newPool);
 		subjectRepo.save(subject);
-		
-		return pool;
+		return newPool;
 	}
 }
