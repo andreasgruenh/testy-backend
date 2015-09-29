@@ -25,7 +25,7 @@ public class CategoryController {
 	@Autowired
 	CategoryRepository catRepo;
 	
-	@JsonView(Views.Summary.class)
+	@JsonView(Views.NoCircleView.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public Category updateCategory(@PathVariable("id") long id, @RequestBody Category postedCategory) {
 		if(!accountService.getLoggedInAccount().isAdmin()) {

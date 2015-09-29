@@ -24,21 +24,21 @@ public class QuestionPool {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@JsonView(Views.Summary.class)
+	@JsonView(Views.NoCircleView.class)
 	private long id;
 	
-	@JsonView(Views.Summary.class)
+	@JsonView(Views.NoCircleView.class)
 	private String name;
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView(Views.Summary.class)
+	@JsonView(Views.NoCircleView.class)
 	private Set<Category> categories = new HashSet<Category>();
 	
-	@JsonView(Views.Summary.class)
+	@JsonView(Views.NoCircleView.class)
 	private int percentageToPass;
 	
 	@ManyToOne
-	@JsonView(Views.Summary.class)
+	@JsonView(Views.NoCircleView.class)
 	private Subject subject;
 
 	public QuestionPool(String name) {

@@ -21,16 +21,16 @@ public class Category {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@JsonView(Views.Summary.class)
+	@JsonView(Views.NoCircleView.class)
 	protected long id;
 	
-	@JsonView(Views.Summary.class)
+	@JsonView(Views.NoCircleView.class)
 	private String name;
 	
-	@JsonView(Views.Summary.class)
+	@JsonView(Views.NoCircleView.class)
 	private int maxScore;
 	
-	@JsonView(Views.Summary.class)
+	@JsonView(Views.NoCircleView.class)
 	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
 	private Set<AbstractQuestion> questions;
 	

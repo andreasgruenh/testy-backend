@@ -21,10 +21,10 @@ public class Subject {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@JsonView(Views.Summary.class)
+	@JsonView(Views.NoCircleView.class)
 	private long id;
 	
-	@JsonView(Views.Summary.class)
+	@JsonView(Views.NoCircleView.class)
 	private String name;
 	
 	public Subject(String name) {
@@ -35,12 +35,12 @@ public class Subject {
 
 	}
 	
-	@JsonView(Views.Summary.class)
+	@JsonView(Views.NoCircleView.class)
 	public long getId() {
 		return id;
 	}
 	
-	@JsonView(Views.Summary.class)
+	@JsonView(Views.NoCircleView.class)
 	public String getName() {
 		return name;
 	}
