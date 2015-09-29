@@ -25,6 +25,9 @@ public class AccountController {
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	Iterable<Account> getAllAccounts() {
+		if(!accountService.getLoggedInAccount().isAdmin()) {
+			throw new NotEnoughPermissionsException("Only admins may see all accounts");
+		}
 		return accountRepo.findAll();
 	}
 	

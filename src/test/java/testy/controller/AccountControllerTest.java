@@ -134,17 +134,27 @@ public class AccountControllerTest {
 	}
 
 	@Test
-	public void GET_accounts_shouldReturnASetWithTheCorrectObject() throws Exception {
+	public void GET_accounts__withAdminPermissions_shouldReturnASetWithTheCorrectObject() throws Exception {
 
 		accountRepo.save(new Account("toni"));
 		accountRepo.save(new Account("tom"));
 		accountRepo.save(new Account("marcel"));
 
 		ObjectMapper mapper = new ObjectMapper();
-		MockHttpServletResponse response = mockMvc.perform(get("/accounts/").session(userSession))
+		MockHttpServletResponse response = mockMvc.perform(get("/accounts/").session(adminSession))
 		        .andExpect(status().isOk()).andReturn().getResponse();
 		Account[] accounts = mapper.readValue(response.getContentAsString(), Account[].class);
-		assertTrue("Response should contain exactly 4 object", accounts.length == 5);
+		assertTrue("Response should contain exactly 5 object", accounts.length == 5);
+	}
+	
+	@Test
+	public void GET_accounts__withoutAdminPermissions_shouldReturn403() throws Exception {
+
+		accountRepo.save(new Account("toni"));
+		accountRepo.save(new Account("tom"));
+		accountRepo.save(new Account("marcel"));
+		mockMvc.perform(get("/accounts/").session(userSession))
+		        .andExpect(status().isForbidden());
 	}
 
 	@Test
