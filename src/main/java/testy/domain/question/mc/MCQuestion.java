@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 public class MCQuestion extends AbstractQuestion {
 	
 	@OneToMany
-	@JsonView(Views.NoCircleView.class)
+	@JsonView(Views.Summary.class)
 	private Set<MCPossibility> possibleAnswers = new HashSet<MCPossibility>();
 	
 	public MCQuestion() {

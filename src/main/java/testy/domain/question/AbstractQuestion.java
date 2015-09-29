@@ -25,16 +25,16 @@ public abstract class AbstractQuestion {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@JsonView(Views.NoCircleView.class)
+	@JsonView(Views.Summary.class)
 	protected long id;
 	
 	@OneToOne
 	private Category category;
 	
-	@JsonView(Views.NoCircleView.class)
+	@JsonView(Views.Summary.class)
 	protected String questionString;
 	
-	@JsonView(Views.NoCircleView.class)
+	@JsonView(Views.Summary.class)
 	protected final int maxScore = 10;
 	
 	public long getId() {

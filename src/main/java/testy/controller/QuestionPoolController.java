@@ -40,7 +40,7 @@ public class QuestionPoolController {
 	@Autowired
 	CategoryRepository catRepo;
 	
-	@JsonView(Views.NoCircleView.class)
+	@JsonView(Views.Summary.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public QuestionPool getQuestionPool(@PathVariable("id") long id) {
 		if(!accountService.getLoggedInAccount().isAdmin()) {

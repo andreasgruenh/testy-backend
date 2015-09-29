@@ -14,13 +14,13 @@ public class MCPossibility {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@JsonView(Views.NoCircleView.class)
+	@JsonView(Views.Summary.class)
 	private long id;
 	
-	@JsonView(Views.NoCircleView.class)
+	@JsonView(Views.Summary.class)
 	private final String text;
 	
-	@JsonView(Views.NoCircleView.class)
+	@JsonView(Views.Summary.class)
 	private final boolean isCorrect;
 	
 	public MCPossibility(String text, boolean isCorrect) {

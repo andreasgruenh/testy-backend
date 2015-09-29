@@ -39,7 +39,7 @@ public class SubjectController {
 	@Autowired
 	QuestionPoolRepository questionPoolRepo;
 	
-	@JsonView(Views.NoCircleView.class)
+	@JsonView(Views.Summary.class)
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public Collection<Subject> getAllSubjects() {
 		return subjectRepo.findAll();
@@ -58,13 +58,13 @@ public class SubjectController {
 		return createdSubject;
 	}
 	
-	@JsonView(Views.NoCircleView.class)
+	@JsonView(Views.Summary.class)
 	@RequestMapping(value = "/{id}/pools", method = RequestMethod.GET)
 	public Collection<QuestionPool> getQuestionPools(@PathVariable("id") long id) {
 		return subjectRepo.findById(id).getQuestionPools();
 	}
 	
-	@JsonView(Views.NoCircleView.class)
+	@JsonView(Views.Summary.class)
 	@ResponseStatus(HttpStatus.CREATED)
 	@RequestMapping(value = "/{id}/pools", method = RequestMethod.POST)
 	public QuestionPool createQuestionPool(@PathVariable("id") long id, @RequestBody QuestionPool postedPool) {
