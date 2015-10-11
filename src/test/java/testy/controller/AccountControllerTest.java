@@ -1,14 +1,5 @@
 package testy.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +14,7 @@ import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -34,6 +26,18 @@ import testy.domain.util.AccountBuilder;
 import testy.helper.SessionEstablisher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.hamcrest.Matchers.is;
+
+import static org.junit.Assert.assertTrue;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -73,16 +77,25 @@ public class AccountControllerTest {
 
 	@Test
 	public void GET_accountsMe_shouldReturnTheCorrectAccountObject() throws Exception {
-		mockMvc.perform(get("/accounts/me").session(userSession)).andExpect(status().isOk())
-		        .andExpect(content().contentType("application/json;charset=UTF-8"))
-		        .andExpect(jsonPath("$.accountName", is(env.getProperty("ldap.loginTester"))));
+		
+		// act
+		ResultActions result = mockMvc.perform(get("/accounts/me").session(userSession)).andExpect(status().isOk())
+		        .andExpect(content().contentType("application/json;charset=UTF-8"));
+		
+		// assert
+		result.andExpect(jsonPath("$.accountName", is(env.getProperty("ldap.loginTester"))));
 	}
 
 	@Test
 	public void GET_base_shouldReturnExpectedString() throws Exception {
+		// arrange
 		final String expectedString = "Backend is running!";
-		mockMvc.perform(get("/").session(userSession)).andExpect(status().isOk())
-		        .andExpect(content().string(expectedString));
+		
+		// act
+		ResultActions result = mockMvc.perform(get("/").session(userSession)).andExpect(status().isOk());
+		
+		// assert
+		result.andExpect(content().string(expectedString));
 	}
 
 	@Test

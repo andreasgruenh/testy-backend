@@ -14,31 +14,26 @@ import javax.persistence.OneToMany;
 
 import testy.domain.Subject;
 import testy.domain.question.Category;
-import testy.domain.util.Views;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 public class QuestionPool {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@JsonView(Views.Summary.class)
 	private long id;
 	
-	@JsonView(Views.Summary.class)
 	private String name;
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView(Views.Summary.class)
+	@JsonIgnoreProperties({"questions"})
 	private Set<Category> categories = new HashSet<Category>();
 	
-	@JsonView(Views.Summary.class)
 	private int percentageToPass;
 	
 	@ManyToOne
-	@JsonView(Views.Summary.class)
 	private Subject subject;
 
 	public QuestionPool(String name) {

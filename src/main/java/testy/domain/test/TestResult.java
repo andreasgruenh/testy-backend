@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import testy.domain.Account;
 import testy.domain.Subject;
 import testy.domain.question.AbstractAnswer;
@@ -32,6 +34,7 @@ public class TestResult {
 	private Subject subject;
 	
 	@ManyToOne
+	@JsonIgnoreProperties({"categories", "percentageToPass"})
 	private QuestionPool questionPool;
 	
 	@OneToMany

@@ -12,19 +12,14 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import testy.domain.test.QuestionPool;
-import testy.domain.util.Views;
-
-import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 public class Subject {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@JsonView(Views.Summary.class)
 	private long id;
 	
-	@JsonView(Views.Summary.class)
 	private String name;
 	
 	public Subject(String name) {
@@ -35,12 +30,10 @@ public class Subject {
 
 	}
 	
-	@JsonView(Views.Summary.class)
 	public long getId() {
 		return id;
 	}
 	
-	@JsonView(Views.Summary.class)
 	public String getName() {
 		return name;
 	}

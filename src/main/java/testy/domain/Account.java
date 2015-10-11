@@ -14,6 +14,8 @@ import javax.persistence.OneToMany;
 
 import testy.domain.test.TestResult;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Account {
 
@@ -30,6 +32,7 @@ public class Account {
 	
 	private String email;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<TestResult> testResults = new HashSet<TestResult>();;
 

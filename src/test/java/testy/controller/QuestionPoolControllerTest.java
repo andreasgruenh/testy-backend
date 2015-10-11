@@ -119,7 +119,6 @@ public class QuestionPoolControllerTest {
 
 		QuestionPool returnedPool = mapper.readValue(response.getContentAsString(),
 		        QuestionPool.class);
-
 		assertTrue("Name of pool should be returned", returnedPool.getName()
 		        .equals(pool1.getName()));
 		assertTrue("Id of pool should be returned", returnedPool.getId() == pool1.getId());
