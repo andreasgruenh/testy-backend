@@ -27,7 +27,7 @@ import testy.helper.TestClasses;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 import static org.junit.Assert.assertTrue;
 
@@ -81,14 +81,21 @@ public class AccountControllerTest {
 	}
 
 	@Test
-	public void GET_accountsMe_shouldReturnTheCorrectAccountObject() throws Exception {
+	public void GET_accountsMe_shouldReturnTheCorrectAccountObjectWithCorrectProperties() throws Exception {
 		
 		// act
 		ResultActions result = mockMvc.perform(get("/accounts/me").session(userSession)).andExpect(status().isOk())
 		        .andExpect(content().contentType("application/json;charset=UTF-8"));
 		
 		// assert
-		result.andExpect(jsonPath("$.accountName", is(testClasses.user.getAccountName())));
+		result
+		.andExpect(jsonPath("$.accountName", is(equalTo(testClasses.user.getAccountName()))))
+		.andExpect(jsonPath("$.id", is(equalTo((int) testClasses.user.getId()))))
+		.andExpect(jsonPath("$.admin", is(equalTo(testClasses.user.isAdmin()))))
+		.andExpect(jsonPath("$.firstname", is(equalTo(testClasses.user.getFirstname()))))
+		.andExpect(jsonPath("$.lastname", is(equalTo(testClasses.user.getLastname()))))
+		.andExpect(jsonPath("$.email", is(equalTo(testClasses.user.getEmail()))))
+		.andExpect(jsonPath("$.testResults", nullValue()));
 	}
 
 	@Test
