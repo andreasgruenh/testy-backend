@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -24,6 +23,7 @@ import testy.dataaccess.AccountRepository;
 import testy.domain.Account;
 import testy.domain.util.AccountBuilder;
 import testy.helper.SessionEstablisher;
+import testy.helper.TestClasses;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -53,26 +53,31 @@ public class AccountControllerTest {
 
 	@Autowired
 	private WebApplicationContext webAppContext;
-
+	
 	@Autowired
-	private Environment env;
+	private TestClasses testClasses;
 	
 	@Autowired
 	private SessionEstablisher sessionEstablisher;
 
 	private MockHttpSession userSession;
 	private MockHttpSession adminSession;
+	
+	private ObjectMapper mapper;
 
 	@Autowired
 	private AccountRepository accountRepo;
 
 	@Before
 	public void setUp() throws Exception {
+		testClasses.initWithDb();
+		
 		mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).dispatchOptions(true)
 		        .addFilters(filterChainProxy).build();
 		userSession = sessionEstablisher.getUserSessionWith(mockMvc);
-
 		adminSession = sessionEstablisher.getAdminSessionWith(mockMvc);
+		
+		mapper = new ObjectMapper();
 	}
 
 	@Test
@@ -83,7 +88,7 @@ public class AccountControllerTest {
 		        .andExpect(content().contentType("application/json;charset=UTF-8"));
 		
 		// assert
-		result.andExpect(jsonPath("$.accountName", is(env.getProperty("ldap.loginTester"))));
+		result.andExpect(jsonPath("$.accountName", is(testClasses.user.getAccountName())));
 	}
 
 	@Test
@@ -101,71 +106,59 @@ public class AccountControllerTest {
 	@Test
 	public void POST_accountsMe_shouldUpdateOwnAccount() throws Exception {
 
-		ObjectMapper mapper = new ObjectMapper();
-
-		final String firstname = "Andreas", lastname = "Roth", email = "Andreas.Roth@paul-consultants.de";
-
-		String jsonAccount = mockMvc.perform(get("/accounts/me").session(userSession)).andReturn()
-		        .getResponse().getContentAsString();
-		Account account = mapper.readValue(jsonAccount, Account.class);
-
-		final boolean isAdmin = account.isAdmin();
-
-		account = AccountBuilder.startWithExisting(account).withEmail(email)
-		        .withFirstname(firstname).withLastname(lastname).isAdmin(!isAdmin).build();
-
-		jsonAccount = mapper.writeValueAsString(account);
+		// arrange
+		Account alteredAccount = testClasses.user;
+		alteredAccount.setAdmin(true);
+		String jsonAccount = mapper.writeValueAsString(alteredAccount);
+		Account expectedAccount = alteredAccount;
+		expectedAccount.setAdmin(false);
+		
+		// act	
 		mockMvc.perform(
 		        post("/accounts/me").session(userSession).contentType(MediaType.APPLICATION_JSON)
 		                .content(jsonAccount)).andExpect(status().isOk());
 
-		String newJsonAccount = mockMvc.perform(get("/accounts/me").session(userSession))
+		// assert
+		String actualJsonAccount = mockMvc.perform(get("/accounts/me").session(userSession))
 		        .andReturn().getResponse().getContentAsString();
-		Account newAccount = mapper.readValue(newJsonAccount, Account.class);
+		Account actualAccount = mapper.readValue(actualJsonAccount, Account.class);
 
-		assertTrue("Firstname should be postet firstname",
-		        newAccount.getFirstname().equals(firstname));
-		assertTrue("Lastname should be posted lastname", newAccount.getLastname().equals(lastname));
-		assertTrue("E-Mail should be the posted email", newAccount.getEmail().equals(email));
-		assertTrue("Roles must not be changed with this endpoint!", newAccount.isAdmin() == isAdmin);
+		assertTrue("Firstname should be posted firstname",
+		        actualAccount.getFirstname().equals(expectedAccount.getFirstname()));
+		assertTrue("Lastname should be posted lastname", actualAccount.getLastname().equals(expectedAccount.getLastname()));
+		assertTrue("E-Mail should be the posted email", actualAccount.getEmail().equals(expectedAccount.getEmail()));
+		assertTrue("Roles must not be changed with this endpoint!", actualAccount.isAdmin() == expectedAccount.isAdmin());
 	}
 
 	@Test
 	public void POST_accountsMe_withWrongAccount_shouldReturn403() throws Exception {
 
-		ObjectMapper mapper = new ObjectMapper();
-
-		final String firstname = "Andreas", lastname = "Roth", email = "Andreas.Roth@paul-consultants.de";
-
-		Account account = AccountBuilder.startWith("broth").withEmail(email)
-		        .withFirstname(firstname).withLastname(lastname).isAdmin(true).build();
-
+		// arrange
+		Account account = AccountBuilder.startWith("broth").build();
 		String jsonAccount = mapper.writeValueAsString(account);
+		
+		// act + assert
 		mockMvc.perform(
 		        post("/accounts/me").session(userSession).contentType(MediaType.APPLICATION_JSON)
 		                .content(jsonAccount)).andExpect(status().isForbidden());
 	}
 
 	@Test
-	public void GET_accounts__withAdminPermissions_shouldReturnASetWithTheCorrectObject() throws Exception {
-
-		accountRepo.save(new Account("toni"));
-		accountRepo.save(new Account("tom"));
-		accountRepo.save(new Account("marcel"));
-
-		ObjectMapper mapper = new ObjectMapper();
+	public void GET_accounts_withAdminPermissions_shouldReturnASetWithTheCorrectObject() throws Exception {
+		
+		// act
 		MockHttpServletResponse response = mockMvc.perform(get("/accounts/").session(adminSession))
 		        .andExpect(status().isOk()).andReturn().getResponse();
+		
+		// assert
 		Account[] accounts = mapper.readValue(response.getContentAsString(), Account[].class);
-		assertTrue("Response should contain exactly 5 object", accounts.length == 5);
+		assertTrue("Response should contain exactly 2 object", accounts.length == 2);
 	}
 	
 	@Test
-	public void GET_accounts__withoutAdminPermissions_shouldReturn403() throws Exception {
+	public void GET_accounts_withoutAdminPermissions_shouldReturn403() throws Exception {
 
-		accountRepo.save(new Account("toni"));
-		accountRepo.save(new Account("tom"));
-		accountRepo.save(new Account("marcel"));
+		// act + assert
 		mockMvc.perform(get("/accounts/").session(userSession))
 		        .andExpect(status().isForbidden());
 	}
@@ -173,17 +166,9 @@ public class AccountControllerTest {
 	@Test
 	public void PUT_idIsAdmin_withoutAdminPermissions_shouldReturn403() throws Exception {
 
-		ObjectMapper mapper = new ObjectMapper();
-
-		String accountString = mockMvc.perform(get("/accounts/me").session(userSession))
-		        .andExpect(status().isOk())
-		        .andExpect(content().contentType("application/json;charset=UTF-8")).andReturn()
-		        .getResponse().getContentAsString();
-
-		Account account = mapper.readValue(accountString, Account.class);
-
+		// act + assert
 		mockMvc.perform(
-		        put("/accounts/" + account.getId() + "/isAdmin").session(userSession)
+		        put("/accounts/" + testClasses.user.getId() + "/isAdmin").session(userSession)
 		                .contentType(MediaType.APPLICATION_JSON)
 		                .content(mapper.writeValueAsString(false))).andExpect(
 		        status().isForbidden());
@@ -192,22 +177,14 @@ public class AccountControllerTest {
 	@Test
 	public void PUT_idIsAdmin_withAdminPermissions_shouldUpdateAccount() throws Exception {
 
-		ObjectMapper mapper = new ObjectMapper();
-
-		String accountString = mockMvc.perform(get("/accounts/me").session(userSession))
-		        .andExpect(status().isOk())
-		        .andExpect(content().contentType("application/json;charset=UTF-8")).andReturn()
-		        .getResponse().getContentAsString();
-
-		Account userAccount = mapper.readValue(accountString, Account.class);
-
+		// act
 		mockMvc.perform(
-		        put("/accounts/" + userAccount.getId() + "/isAdmin").session(adminSession)
+		        put("/accounts/" + testClasses.user.getId() + "/isAdmin").session(adminSession)
 		                .contentType(MediaType.APPLICATION_JSON)
 		                .content(mapper.writeValueAsString(true))).andExpect(status().isOk());
 
-		mockMvc.perform(get("/accounts/me").session(userSession)).andExpect(status().isOk())
-		        .andExpect(content().contentType("application/json;charset=UTF-8"))
-		        .andExpect(jsonPath("$.admin", is(true)));
+		// assert
+		Account actualAccount = accountRepo.findByAccountName(testClasses.user.getAccountName());
+		assertTrue("User should now be admin but wasn't", actualAccount.isAdmin());
 	}
 }

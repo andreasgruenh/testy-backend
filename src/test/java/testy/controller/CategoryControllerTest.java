@@ -22,8 +22,8 @@ import testy.dataaccess.QuestionPoolRepository;
 import testy.dataaccess.SubjectRepository;
 import testy.domain.Subject;
 import testy.domain.question.AbstractQuestion;
-import testy.domain.question.Category;
 import testy.domain.question.mc.MCQuestion;
+import testy.domain.test.Category;
 import testy.domain.test.QuestionPool;
 import testy.helper.SessionEstablisher;
 

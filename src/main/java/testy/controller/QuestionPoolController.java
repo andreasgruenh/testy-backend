@@ -14,7 +14,7 @@ import testy.dataaccess.AccountRepository;
 import testy.dataaccess.CategoryRepository;
 import testy.dataaccess.QuestionPoolRepository;
 import testy.dataaccess.SubjectRepository;
-import testy.domain.question.Category;
+import testy.domain.test.Category;
 import testy.domain.test.QuestionPool;
 import testy.domain.util.Views;
 import testy.security.service.CurrentAccountService;

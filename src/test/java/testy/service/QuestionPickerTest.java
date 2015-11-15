@@ -8,8 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import testy.domain.question.AbstractQuestion;
-import testy.domain.question.Category;
 import testy.domain.question.mc.MCQuestion;
+import testy.domain.test.Category;
 import testy.domain.test.QuestionPicker;
 import testy.domain.test.QuestionPool;
 

@@ -1,13 +1,14 @@
 package testy.domain;
 
 import static org.junit.Assert.*;
+
 import static testy.helper.UnmodifiableChecker.isUnmodifiable;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import testy.domain.question.Category;
 import testy.domain.question.mc.MCQuestion;
+import testy.domain.test.Category;
 import testy.domain.test.QuestionPool;
 
 public class QuestionPoolTest {

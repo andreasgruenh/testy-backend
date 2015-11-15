@@ -8,6 +8,7 @@ import javax.persistence.OneToOne;
 
 import testy.domain.question.image.ImageQuestion;
 import testy.domain.question.mc.MCQuestion;
+import testy.domain.test.Category;
 import testy.domain.util.Views;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;

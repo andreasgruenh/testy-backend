@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import testy.controller.exception.NotEnoughPermissionsException;
 import testy.dataaccess.CategoryRepository;
-import testy.domain.question.Category;
+import testy.domain.test.Category;
 import testy.domain.util.Views;
 import testy.security.service.CurrentAccountService;
 

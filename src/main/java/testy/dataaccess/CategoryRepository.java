@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.springframework.data.repository.CrudRepository;
 
-import testy.domain.question.Category;
+import testy.domain.test.Category;
 
 
 

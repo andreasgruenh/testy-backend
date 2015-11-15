@@ -1,4 +1,4 @@
-package testy.domain.question;
+package testy.domain.test;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import testy.domain.question.AbstractQuestion;
 import testy.domain.util.Views;
 
 import com.fasterxml.jackson.annotation.JsonView;

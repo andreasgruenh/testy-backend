@@ -9,7 +9,6 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import testy.domain.question.AbstractQuestion;
-import testy.domain.question.Category;
 
 @Service
 public class QuestionPicker {
