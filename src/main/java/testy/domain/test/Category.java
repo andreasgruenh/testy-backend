@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import testy.domain.question.AbstractQuestion;
 import testy.domain.util.Views;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
@@ -31,7 +32,7 @@ public class Category {
 	@JsonView(Views.Summary.class)
 	private int maxScore;
 	
-	@JsonView(Views.Summary.class)
+	@JsonIgnore
 	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
 	private Set<AbstractQuestion> questions;
 	

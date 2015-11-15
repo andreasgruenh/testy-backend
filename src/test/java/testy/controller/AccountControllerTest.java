@@ -7,13 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -27,9 +25,10 @@ import testy.helper.TestClasses;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.hamcrest.Matchers.*;
-
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.iterableWithSize;
+import static org.hamcrest.Matchers.nullValue;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -53,16 +52,16 @@ public class AccountControllerTest {
 
 	@Autowired
 	private WebApplicationContext webAppContext;
-	
+
 	@Autowired
 	private TestClasses testClasses;
-	
+
 	@Autowired
 	private SessionEstablisher sessionEstablisher;
 
 	private MockHttpSession userSession;
 	private MockHttpSession adminSession;
-	
+
 	private ObjectMapper mapper;
 
 	@Autowired
@@ -71,47 +70,49 @@ public class AccountControllerTest {
 	@Before
 	public void setUp() throws Exception {
 		testClasses.initWithDb();
-		
+
 		mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).dispatchOptions(true)
 		        .addFilters(filterChainProxy).build();
 		userSession = sessionEstablisher.getUserSessionWith(mockMvc);
 		adminSession = sessionEstablisher.getAdminSessionWith(mockMvc);
-		
+
 		mapper = new ObjectMapper();
 	}
 
 	@Test
-	public void GET_accountsMe_shouldReturnTheCorrectAccountObjectWithCorrectProperties() throws Exception {
-		
+	public void GET_accountsMe_shouldReturnTheCorrectAccountObjectWithCorrectProperties()
+	        throws Exception {
+
 		// act
-		ResultActions result = mockMvc.perform(get("/accounts/me").session(userSession)).andExpect(status().isOk())
-		        .andExpect(content().contentType("application/json;charset=UTF-8"));
-		
-		// assert
-		result
-		.andExpect(jsonPath("$.accountName", is(equalTo(testClasses.user.getAccountName()))))
-		.andExpect(jsonPath("$.id", is(equalTo((int) testClasses.user.getId()))))
-		.andExpect(jsonPath("$.admin", is(equalTo(testClasses.user.isAdmin()))))
-		.andExpect(jsonPath("$.firstname", is(equalTo(testClasses.user.getFirstname()))))
-		.andExpect(jsonPath("$.lastname", is(equalTo(testClasses.user.getLastname()))))
-		.andExpect(jsonPath("$.email", is(equalTo(testClasses.user.getEmail()))))
-		.andExpect(jsonPath("$.testResults", nullValue()));
+		mockMvc.perform(get("/accounts/me").session(userSession))
+		        .andExpect(status().isOk())
+		        .andExpect(content().contentType("application/json;charset=UTF-8"))
+
+		        // assert
+		        .andExpect(
+		                jsonPath("$.accountName", is(equalTo(testClasses.user.getAccountName()))))
+		        .andExpect(jsonPath("$.id", is(equalTo((int) testClasses.user.getId()))))
+		        .andExpect(jsonPath("$.admin", is(equalTo(testClasses.user.isAdmin()))))
+		        .andExpect(jsonPath("$.firstname", is(equalTo(testClasses.user.getFirstname()))))
+		        .andExpect(jsonPath("$.lastname", is(equalTo(testClasses.user.getLastname()))))
+		        .andExpect(jsonPath("$.email", is(equalTo(testClasses.user.getEmail()))))
+		        .andExpect(jsonPath("$.testResults", nullValue()));
 	}
 
 	@Test
 	public void GET_base_shouldReturnExpectedString() throws Exception {
 		// arrange
 		final String expectedString = "Backend is running!";
-		
+
 		// act
-		ResultActions result = mockMvc.perform(get("/").session(userSession)).andExpect(status().isOk());
-		
+		mockMvc.perform(get("/").session(userSession)).andExpect(status().isOk())
+
 		// assert
-		result.andExpect(content().string(expectedString));
+		        .andExpect(content().string(expectedString));
 	}
 
 	@Test
-	public void POST_accountsMe_shouldUpdateOwnAccount() throws Exception {
+	public void POST_accountsMe_shouldReturnUpdatedAccount() throws Exception {
 
 		// arrange
 		Account alteredAccount = testClasses.user;
@@ -119,22 +120,18 @@ public class AccountControllerTest {
 		String jsonAccount = mapper.writeValueAsString(alteredAccount);
 		Account expectedAccount = alteredAccount;
 		expectedAccount.setAdmin(false);
-		
-		// act	
+
+		// act
 		mockMvc.perform(
 		        post("/accounts/me").session(userSession).contentType(MediaType.APPLICATION_JSON)
-		                .content(jsonAccount)).andExpect(status().isOk());
+		                .content(jsonAccount))
+		        .andExpect(status().isOk())
 
-		// assert
-		String actualJsonAccount = mockMvc.perform(get("/accounts/me").session(userSession))
-		        .andReturn().getResponse().getContentAsString();
-		Account actualAccount = mapper.readValue(actualJsonAccount, Account.class);
-
-		assertTrue("Firstname should be posted firstname",
-		        actualAccount.getFirstname().equals(expectedAccount.getFirstname()));
-		assertTrue("Lastname should be posted lastname", actualAccount.getLastname().equals(expectedAccount.getLastname()));
-		assertTrue("E-Mail should be the posted email", actualAccount.getEmail().equals(expectedAccount.getEmail()));
-		assertTrue("Roles must not be changed with this endpoint!", actualAccount.isAdmin() == expectedAccount.isAdmin());
+		        // assert
+		        .andExpect(jsonPath("$.firstname", is(equalTo(expectedAccount.getFirstname()))))
+		        .andExpect(jsonPath("$.lastname", is(equalTo(expectedAccount.getLastname()))))
+		        .andExpect(jsonPath("$.email", is(equalTo(expectedAccount.getEmail()))))
+		        .andExpect(jsonPath("$.admin", is(equalTo(expectedAccount.isAdmin()))));
 	}
 
 	@Test
@@ -143,7 +140,7 @@ public class AccountControllerTest {
 		// arrange
 		Account account = AccountBuilder.startWith("broth").build();
 		String jsonAccount = mapper.writeValueAsString(account);
-		
+
 		// act + assert
 		mockMvc.perform(
 		        post("/accounts/me").session(userSession).contentType(MediaType.APPLICATION_JSON)
@@ -151,23 +148,21 @@ public class AccountControllerTest {
 	}
 
 	@Test
-	public void GET_accounts_withAdminPermissions_shouldReturnASetWithTheCorrectObject() throws Exception {
-		
+	public void GET_accounts_withAdminPermissions_shouldReturnASetWithTheCorrectObjects()
+	        throws Exception {
+
 		// act
-		MockHttpServletResponse response = mockMvc.perform(get("/accounts/").session(adminSession))
-		        .andExpect(status().isOk()).andReturn().getResponse();
-		
+		mockMvc.perform(get("/accounts/").session(adminSession)).andExpect(status().isOk())
+
 		// assert
-		Account[] accounts = mapper.readValue(response.getContentAsString(), Account[].class);
-		assertTrue("Response should contain exactly 2 object", accounts.length == 2);
+		        .andExpect(jsonPath("$", iterableWithSize(2)));
 	}
-	
+
 	@Test
 	public void GET_accounts_withoutAdminPermissions_shouldReturn403() throws Exception {
 
 		// act + assert
-		mockMvc.perform(get("/accounts/").session(userSession))
-		        .andExpect(status().isForbidden());
+		mockMvc.perform(get("/accounts/").session(userSession)).andExpect(status().isForbidden());
 	}
 
 	@Test
@@ -188,10 +183,9 @@ public class AccountControllerTest {
 		mockMvc.perform(
 		        put("/accounts/" + testClasses.user.getId() + "/isAdmin").session(adminSession)
 		                .contentType(MediaType.APPLICATION_JSON)
-		                .content(mapper.writeValueAsString(true))).andExpect(status().isOk());
+		                .content(mapper.writeValueAsString(true))).andExpect(status().isOk())
 
 		// assert
-		Account actualAccount = accountRepo.findByAccountName(testClasses.user.getAccountName());
-		assertTrue("User should now be admin but wasn't", actualAccount.isAdmin());
+		        .andExpect(jsonPath("$.admin", is(true)));
 	}
 }

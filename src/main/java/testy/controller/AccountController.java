@@ -37,7 +37,7 @@ public class AccountController {
 	}
 	
 	@RequestMapping(value = "/me", method = RequestMethod.POST)
-	void updateAccount(@RequestBody Account newAccount) {
+	Account updateAccount(@RequestBody Account newAccount) {
 		
 		Account loggedInAccount = accountService.getLoggedInAccount();
 		if(!loggedInAccount.getAccountName().equals(newAccount.getAccountName())) {
@@ -53,10 +53,11 @@ public class AccountController {
 			.build();
 		
 		accountRepo.save(account);
+		return account;
 	}
 	
 	@RequestMapping(value = "/{id}/isAdmin", method = RequestMethod.PUT)
-	void setIsAdmin(@PathVariable("id") long id, @RequestBody boolean isAdmin) {
+	Account setIsAdmin(@PathVariable("id") long id, @RequestBody boolean isAdmin) {
 		Account loggedInAccount = accountService.getLoggedInAccount();
 		if(!loggedInAccount.isAdmin()) {
 			throw new NotEnoughPermissionsException("Only admins can set this value");
@@ -65,6 +66,7 @@ public class AccountController {
 		Account account = accountRepo.findById(id);
 		account.setAdmin(isAdmin);
 		accountRepo.save(account);
+		return account;
 	}
 	
 	@RequestMapping(value = "/loggedIn", method = RequestMethod.GET)

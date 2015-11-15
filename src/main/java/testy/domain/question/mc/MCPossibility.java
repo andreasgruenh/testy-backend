@@ -23,6 +23,12 @@ public class MCPossibility {
 	@JsonView(Views.Summary.class)
 	private final boolean isCorrect;
 	
+	@Deprecated
+	public MCPossibility() {
+		text = "";
+		isCorrect = false;
+	}
+	
 	public MCPossibility(String text, boolean isCorrect) {
 		this.text = text;
 		this.isCorrect = isCorrect;
