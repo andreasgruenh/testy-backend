@@ -24,6 +24,7 @@ import testy.dataaccess.SubjectRepository;
 import testy.domain.Subject;
 import testy.domain.test.QuestionPool;
 import testy.helper.SessionEstablisher;
+import testy.helper.TestClasses;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -51,6 +52,9 @@ public class SubjectControllerTest {
 
 	@Autowired
 	private SessionEstablisher sessionEstablisher;
+	
+	@Autowired
+	TestClasses testClasses;
 
 	private MockHttpSession userSession;
 	private MockHttpSession adminSession;
@@ -65,7 +69,8 @@ public class SubjectControllerTest {
 
 	@Before
 	public void setUp() throws Exception {
-
+		testClasses.initWithDb();
+		
 		mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).dispatchOptions(true)
 		        .addFilters(filterChainProxy).build();
 

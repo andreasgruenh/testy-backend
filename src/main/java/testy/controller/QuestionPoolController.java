@@ -9,24 +9,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import testy.controller.exception.NotEnoughPermissionsException;
 import testy.dataaccess.AccountRepository;
 import testy.dataaccess.CategoryRepository;
 import testy.dataaccess.QuestionPoolRepository;
 import testy.dataaccess.SubjectRepository;
 import testy.domain.test.Category;
 import testy.domain.test.QuestionPool;
-import testy.domain.util.Views;
-import testy.security.service.CurrentAccountService;
-
-import com.fasterxml.jackson.annotation.JsonView;
 
 @RestController
 @RequestMapping("/pools")
-public class QuestionPoolController {
-
-	@Autowired
-	CurrentAccountService accountService;
+public class QuestionPoolController extends ApiController {
 	
 	@Autowired
 	AccountRepository accountRepo;
@@ -40,21 +32,16 @@ public class QuestionPoolController {
 	@Autowired
 	CategoryRepository catRepo;
 	
-	@JsonView(Views.Summary.class)
+	@NeedsLoggedInAccount(admin = "true")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public QuestionPool getQuestionPool(@PathVariable("id") long id) {
-		if(!accountService.getLoggedInAccount().isAdmin()) {
-			throw new NotEnoughPermissionsException("Only admins may see QuestionPoolDetails");
-		}
 		return questionPoolRepo.findById(id);
 	}
 	
+	@NeedsLoggedInAccount(admin = "true")
 	@ResponseStatus(HttpStatus.CREATED)
 	@RequestMapping(value = "/{id}/categories", method = RequestMethod.POST)
 	public Category createNewCategory(@PathVariable("id") long id, @RequestBody Category postedCategory) {
-		if(!accountService.getLoggedInAccount().isAdmin()) {
-			throw new NotEnoughPermissionsException("Only admins may add new categories");
-		}
 		
 		Category newCategory = new Category();
 		newCategory.setName(postedCategory.getName());

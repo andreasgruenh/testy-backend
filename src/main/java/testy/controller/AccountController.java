@@ -11,35 +11,30 @@ import testy.controller.exception.NotEnoughPermissionsException;
 import testy.dataaccess.AccountRepository;
 import testy.domain.Account;
 import testy.domain.util.AccountBuilder;
-import testy.security.service.CurrentAccountService;
 
 @RestController
 @RequestMapping("/accounts")
-public class AccountController {
-
-	@Autowired
-	CurrentAccountService accountService;
+public class AccountController extends ApiController{
 	
 	@Autowired
 	AccountRepository accountRepo;
 	
+	@NeedsLoggedInAccount(admin = "true")
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	Iterable<Account> getAllAccounts() {
-		if(!accountService.getLoggedInAccount().isAdmin()) {
-			throw new NotEnoughPermissionsException("Only admins may see all accounts");
-		}
 		return accountRepo.findAll();
 	}
 	
+	@NeedsLoggedInAccount
 	@RequestMapping(value = "/me", method = RequestMethod.GET)
 	Account getCurrentUser() {
-		return accountService.getLoggedInAccount();
+		return loggedInAccount;
 	}
 	
+	@NeedsLoggedInAccount
 	@RequestMapping(value = "/me", method = RequestMethod.POST)
 	Account updateAccount(@RequestBody Account newAccount) {
-		
-		Account loggedInAccount = accountService.getLoggedInAccount();
+
 		if(!loggedInAccount.getAccountName().equals(newAccount.getAccountName())) {
 			throw new NotEnoughPermissionsException("No editing other Accounts!");
 		}
@@ -56,13 +51,9 @@ public class AccountController {
 		return account;
 	}
 	
+	@NeedsLoggedInAccount(admin = "true")
 	@RequestMapping(value = "/{id}/isAdmin", method = RequestMethod.PUT)
 	Account setIsAdmin(@PathVariable("id") long id, @RequestBody boolean isAdmin) {
-		Account loggedInAccount = accountService.getLoggedInAccount();
-		if(!loggedInAccount.isAdmin()) {
-			throw new NotEnoughPermissionsException("Only admins can set this value");
-		}
-		
 		Account account = accountRepo.findById(id);
 		account.setAdmin(isAdmin);
 		accountRepo.save(account);

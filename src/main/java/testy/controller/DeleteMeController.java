@@ -12,7 +12,7 @@ import testy.domain.question.AbstractQuestion;
 
 @RestController
 @RequestMapping("/test")
-public class DeleteMeController {
+public class DeleteMeController extends ApiController{
 
 	@RequestMapping(value = "/", method = RequestMethod.POST)
 	AbstractQuestion updateAccount(@RequestBody Set<AbstractQuestion> questions) {
