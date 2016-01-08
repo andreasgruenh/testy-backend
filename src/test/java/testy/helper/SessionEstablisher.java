@@ -16,14 +16,24 @@ public class SessionEstablisher {
 	private TestClasses testClasses;
 
 	public MockHttpSession getUserSessionWith(MockMvc mock) throws Exception {
+		if(testClasses.user == null) {
+			testClasses.init();
+		}
 		return (MockHttpSession) mock
 		        .perform(
-		                post("/login").param("username", testClasses.user.getAccountName()).param(
+		                post("/login")
+		                .param("username", 
+		                		testClasses.user
+		                		.getAccountName())
+		                .param(
 		                        "password", testClasses.userPassword)).andExpect(status().isOk())
 		        .andReturn().getRequest().getSession();
 	}
 
 	public MockHttpSession getAdminSessionWith(MockMvc mock) throws Exception {
+		if(testClasses.admin == null) {
+			testClasses.init();
+		}
 		return (MockHttpSession) mock
 		        .perform(
 		                post("/login").param("username", testClasses.admin.getAccountName()).param(

@@ -13,6 +13,8 @@ import javax.persistence.OneToMany;
 
 import testy.domain.test.QuestionPool;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Subject {
 
@@ -22,6 +24,9 @@ public class Subject {
 	
 	private String name;
 	
+	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<QuestionPool> questionPools = new HashSet<QuestionPool>();
+
 	public Subject(String name) {
 		this.name = name;
 	}
@@ -42,9 +47,7 @@ public class Subject {
 		this.name = name;
 	}
 
-	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<QuestionPool> questionPools = new HashSet<QuestionPool>();
-
+	@JsonIgnore
 	public Set<QuestionPool> getQuestionPools() {
 		return Collections.unmodifiableSet(questionPools);
 	}

@@ -33,7 +33,6 @@ public class SubjectController extends ApiController {
 	@Autowired
 	QuestionPoolRepository questionPoolRepo;
 	
-	@JsonView(Views.Summary.class)
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public Collection<Subject> getAllSubjects() {
 		return subjectRepo.findAll();

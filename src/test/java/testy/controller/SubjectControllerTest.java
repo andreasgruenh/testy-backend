@@ -1,6 +1,11 @@
 package testy.controller;
 
-import java.util.Arrays;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,14 +31,8 @@ import testy.domain.test.QuestionPool;
 import testy.helper.SessionEstablisher;
 import testy.helper.TestClasses;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static org.junit.Assert.assertTrue;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -66,7 +65,7 @@ public class SubjectControllerTest {
 	long subject1Id;
 
 	ObjectMapper mapper = new ObjectMapper();
-
+	
 	@Before
 	public void setUp() throws Exception {
 		testClasses.initWithDb();
@@ -75,31 +74,22 @@ public class SubjectControllerTest {
 		        .addFilters(filterChainProxy).build();
 
 		userSession = sessionEstablisher.getUserSessionWith(mockMvc);
-
 		adminSession = sessionEstablisher.getAdminSessionWith(mockMvc);
-		subject1 = new Subject("Fach1");
-		Subject subject2 = new Subject("Fach2");
-		Subject subject3 = new Subject("Fach3");
-
-		QuestionPool pool1 = new QuestionPool("pool1");
-		QuestionPool pool2 = new QuestionPool("pool2");
-		subjectRepo.save(Arrays.asList(subject1, subject2, subject3));
-
-		subject1.addQuestionPool(pool1);
-		subject1.addQuestionPool(pool2);
-		subject1 = subjectRepo.save(subject1);
-		subject1Id = subject1.getId();
 	}
 
 	@Test
-	public void GET_subjects_shouldReturnTheCorrectAmmountOfSubjects() throws Exception {
+	public void GET_subjects_shouldReturnCollectionOfSubjects() throws Exception {
 
+		// act
 		MockHttpServletResponse response = mockMvc.perform(get("/subjects/").session(userSession))
 		        .andExpect(status().isOk()).andReturn().getResponse();
 
-		Subject[] subjects = mapper.readValue(response.getContentAsString(), Subject[].class);
-
-		assertTrue("Response should contain exactly 3 object", subjects.length == 3);
+		// assert
+		try {
+			mapper.readValue(response.getContentAsString(), new TypeReference<Collection<Subject>>(){});
+		} catch(Exception e) {
+			assertTrue("Collection of subjects should have been returned", false);
+		}
 	}
 
 	@Test
