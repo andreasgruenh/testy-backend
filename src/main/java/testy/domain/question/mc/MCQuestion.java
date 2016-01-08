@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
@@ -17,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @JsonTypeName("MCQuestion")
 public class MCQuestion extends AbstractQuestion {
 	
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView(Views.Summary.class)
 	private Set<MCPossibility> possibleAnswers = new HashSet<MCPossibility>();
 	
