@@ -50,6 +50,7 @@ public class QuestionPool {
 		this.name = name;
 	}
 
+	@JsonIgnore
 	public int getMaxScoreOfConcreteTest() {
 		int result = 0;
 		for(Category category: categories) {

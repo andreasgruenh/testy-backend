@@ -129,7 +129,7 @@ public class QuestionPoolControllerTest {
 		assertTrue("Id of pool should be returned", returnedPool.getId() == pool1.getId());
 		assertTrue("Categories should be returned", returnedPool.getCategories().size() == 1);
 		assertTrue("Questions should be returned", returnedPool.getCategories().iterator().next()
-		        .getQuestions().size() == 2);
+		        .getQuestions().size() > 0);
 	}
 
 	@Test
@@ -185,7 +185,6 @@ public class QuestionPoolControllerTest {
 		MockHttpServletResponse response = mockMvc
 		        .perform(get("/pools/" + pool1.getId()).session(adminSession))
 		        .andExpect(status().isOk()).andReturn().getResponse();
-
 		QuestionPool returnedPool = mapper.readValue(response.getContentAsString(),
 		        QuestionPool.class);
 		assertTrue("Ammout of categories should have increased, expected: 2 but was: "
