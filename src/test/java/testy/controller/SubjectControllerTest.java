@@ -1,137 +1,135 @@
 package testy.controller;
 
+import static org.hamcrest.Matchers.any;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Collection;
-
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockHttpSession;
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 
-import testy.Application;
 import testy.dataaccess.SubjectRepository;
 import testy.domain.Subject;
 import testy.domain.test.QuestionPool;
-import testy.helper.SessionEstablisher;
-import testy.helper.TestClasses;
+import testy.helper.JsonIterableChecker;
+import testy.helper.annotations.NeedsSessions;
+import testy.helper.annotations.NeedsTestClasses;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@WebAppConfiguration
-@Transactional
-@IntegrationTest
-public class SubjectControllerTest {
-
-	private MockMvc mockMvc;
-
-	@Autowired
-	private FilterChainProxy filterChainProxy;
-
-	@Autowired
-	private WebApplicationContext webAppContext;
-
-	@Autowired
-	private SessionEstablisher sessionEstablisher;
-	
-	@Autowired
-	TestClasses testClasses;
-
-	private MockHttpSession userSession;
-	private MockHttpSession adminSession;
+public class SubjectControllerTest extends ControllerTest {
 
 	@Autowired
 	private SubjectRepository subjectRepo;
 
-	private Subject subject1;
-	long subject1Id;
-
-	ObjectMapper mapper = new ObjectMapper();
-	
-	@Before
-	public void setUp() throws Exception {
-		testClasses.initWithDb();
-		
-		mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).dispatchOptions(true)
-		        .addFilters(filterChainProxy).build();
-
-		userSession = sessionEstablisher.getUserSessionWith(mockMvc);
-		adminSession = sessionEstablisher.getAdminSessionWith(mockMvc);
-	}
-
+	@NeedsSessions
+	@NeedsTestClasses
 	@Test
 	public void GET_subjects_shouldReturnCollectionOfSubjects() throws Exception {
 
 		// act
-		MockHttpServletResponse response = mockMvc.perform(get("/subjects/").session(userSession))
-		        .andExpect(status().isOk()).andReturn().getResponse();
+		String response = mockMvc.perform(get("/subjects/").session(userSession))
+			.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
 		// assert
-		try {
-			mapper.readValue(response.getContentAsString(), new TypeReference<Collection<Subject>>(){});
-		} catch(Exception e) {
-			assertTrue("Collection of subjects should have been returned", false);
-		}
+		assertTrue("Collection of Subjects should be returned, but was: " + response,
+			JsonIterableChecker.representsIterableOfClass(response, Subject.class));
 	}
 
+	@NeedsSessions
+	@NeedsTestClasses
+	@Test
+	public void GET_subjects_shouldReturnCorrectProperties() throws Exception {
+
+		// act
+		mockMvc.perform(get("/subjects/").session(userSession))
+			.andExpect(status().isOk())
+
+			// assert
+			.andExpect(jsonPath("$[0].id", is(any(Integer.class))))
+			.andExpect(jsonPath("$[0].name", is(any(String.class))))
+			.andExpect(jsonPath("$[0].questionPools").doesNotExist());
+
+	}
+
+	@NeedsSessions
+	@NeedsTestClasses
 	@Test
 	public void POST_subjects_withoutAdminPermissions_shouldReturn403() throws Exception {
 
+		// arrange
 		Subject newSubject = new Subject("Fach4");
 
-		mockMvc.perform(
-		        post("/subjects/").session(userSession).contentType(MediaType.APPLICATION_JSON)
-		                .content(mapper.writeValueAsString(newSubject)))
-		        .andExpect(status().isForbidden()).andReturn().getRequest();
+		// act
+		mockMvc.perform(post("/subjects/").session(userSession).contentType(MediaType.APPLICATION_JSON)
+			.content(mapper.writeValueAsString(newSubject)))
+
+			// assert
+			.andExpect(status().isForbidden());
 	}
 
+	@NeedsSessions
+	@NeedsTestClasses
 	@Test
 	public void POST_subjects_withPermissions_shouldCreateTheNewSubject() throws Exception {
 
-		Subject newSubject = new Subject("Fach4");
+		// arrange
+		Subject expectedSubject = new Subject("Fach4");
 
+		// act
 		MockHttpServletResponse response = mockMvc
-		        .perform(
-		                post("/subjects/").session(adminSession)
-		                        .contentType(MediaType.APPLICATION_JSON)
-		                        .content(mapper.writeValueAsString(newSubject)))
-		        .andExpect(status().isCreated()).andReturn().getResponse();
+			.perform(post("/subjects/").session(adminSession).contentType(MediaType.APPLICATION_JSON)
+			.content(mapper.writeValueAsString(expectedSubject)))
+			.andExpect(status().isCreated()).andReturn().getResponse();
 
+		// assert
 		Subject createdSubject = mapper.readValue(response.getContentAsString(), Subject.class);
-		assertTrue("Name of new subject should be equal to posted name", createdSubject.getName()
-		        .equals(newSubject.getName()));
+		assertTrue("Name of new subject should be " + 
+					expectedSubject.getName() + 
+					" but was " + 
+					createdSubject.getName(), 
+			createdSubject.getName().equals(expectedSubject.getName()));
 	}
 
+	@NeedsSessions
+	@NeedsTestClasses
 	@Test
-	public void GET_subjectsIdPools_shouldReturnAllQuestionPools() throws Exception {
+	public void GET_subjectsIdPools_shouldReturnArrayOfQuestionPools() throws Exception {
 
-		MockHttpServletResponse response = mockMvc
-		        .perform(get("/subjects/" + subject1Id + "/pools").session(userSession))
-		        .andExpect(status().isOk()).andReturn().getResponse();
+		// act
+		String response = mockMvc
+			.perform(get("/subjects/" + testClasses.subject1.getId() + "/pools").session(userSession))
+			.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
-		QuestionPool[] pools = mapper
-		        .readValue(response.getContentAsString(), QuestionPool[].class);
-		assertTrue("Ammount of questionPools not correct", pools.length == 2);
+		// assert
+		assertTrue("Array of questionPools should be returned but was: " + response, 
+			JsonIterableChecker.representsIterableOfClass(response, QuestionPool.class));
 	}
 
+	@NeedsSessions
+	@NeedsTestClasses
+	@Test
+	public void GET_subjectsIdPools_shouldReturnCorrectProperties() throws Exception {
+
+		// act
+		mockMvc.perform(get("/subjects/" + testClasses.subject1.getId() + "/pools").session(userSession))
+			.andExpect(status().isOk())
+			
+			// assert
+			.andExpect(jsonPath("$[0].id", is(any(Integer.class))))
+			.andExpect(jsonPath("$[0].name", is(any(String.class))))
+			.andExpect(jsonPath("$[0].maxScoreOfConcreteTest", is(any(Integer.class))))
+			.andExpect(jsonPath("$[0].percentageToPass", is(any(Integer.class))))
+			.andExpect(jsonPath("$[0].categories").doesNotExist());
+
+	}
+	
+	@NeedsSessions
+	@NeedsTestClasses
 	@Test
 	public void POST_subjectsIdPools_withWrongPermissions_shouldReturn403() throws Exception {
 
@@ -139,61 +137,59 @@ public class SubjectControllerTest {
 		QuestionPool newPool = new QuestionPool("newPool");
 		newPool.setPercentageToPass(200);
 
-		mockMvc.perform(
-		        post("/subjects/" + subject1.getId() + "/pools").session(userSession)
-		                .contentType(MediaType.APPLICATION_JSON)
-		                .content(mapper.writeValueAsString(newPool))).andExpect(
-		        status().isForbidden());
+		// act
+		mockMvc.perform(post("/subjects/" + testClasses.subject1.getId() + "/pools").session(userSession)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(mapper.writeValueAsString(newPool)))
+				
+			// assert
+			.andExpect(status().isForbidden());
 	}
 
+	@NeedsSessions
+	@NeedsTestClasses
 	@Test
 	public void POST_subjectsIdPools_withCorrectPermissions_shouldReturnCreatedPool()
-	        throws Exception {
+		throws Exception {
 
 		// arrange
 		QuestionPool newPool = new QuestionPool("newPool");
 		newPool.setPercentageToPass(200);
 
 		// act
-		MockHttpServletResponse response = mockMvc
-		        .perform(
-		                post("/subjects/" + subject1.getId() + "/pools").session(adminSession)
-		                        .contentType(MediaType.APPLICATION_JSON)
-		                        .content(mapper.writeValueAsString(newPool)))
-		        .andExpect(status().isCreated()).andReturn().getResponse();
-
-		// assert
-		QuestionPool createdPool = mapper.readValue(response.getContentAsString(),
-		        QuestionPool.class);
-		assertTrue("Name of created pool should equal posted pool, it is '" + createdPool.getName()
-		        + "' but expected was '" + newPool.getName() + "'",
-		        newPool.getName().equals(createdPool.getName()));
-		assertTrue("Percentage to pass should be set correctly",
-		        createdPool.getPercentageToPass() == newPool.getPercentageToPass());
-		assertTrue("Subject should be set correctly",
-		        createdPool.getSubject().getId() == subject1Id);
+		mockMvc
+			.perform(post("/subjects/" + testClasses.subject1.getId() + "/pools")
+			.session(adminSession).contentType(MediaType.APPLICATION_JSON)
+			.content(mapper.writeValueAsString(newPool)))
+			.andExpect(status().isCreated())
+			
+			// assert
+			.andExpect(jsonPath("$.name", is(equalTo(newPool.getName()))))
+			.andExpect(jsonPath("$.percentageToPass", is(equalTo(newPool.getPercentageToPass()))))
+			.andExpect(jsonPath("$.id", is(any(Integer.class))));
 	}
 
+	@NeedsSessions
+	@NeedsTestClasses
 	@Test
 	public void POST_subjectsIdPools_withCorrectPermissions_shouldCreatePool() throws Exception {
 
 		// arrange
-		QuestionPool newPool = new QuestionPool("newPool");
+		String poolName = "Very new Pool!";
+		QuestionPool newPool = new QuestionPool(poolName);
 		newPool.setPercentageToPass(200);
-		mockMvc.perform(
-		        post("/subjects/" + subject1.getId() + "/pools").session(adminSession)
-		                .contentType(MediaType.APPLICATION_JSON)
-		                .content(mapper.writeValueAsString(newPool))).andExpect(
-		        status().isCreated());
+		mockMvc
+			.perform(post("/subjects/" + testClasses.subject1.getId() + "/pools").session(adminSession)
+			.contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(newPool)))
+			.andExpect(status().isCreated());
 
 		// act
-		MockHttpServletResponse response = mockMvc
-		        .perform(get("/subjects/" + subject1Id + "/pools").session(userSession))
-		        .andExpect(status().isOk()).andReturn().getResponse();
+		mockMvc
+			.perform(get("/subjects/" + testClasses.subject1.getId() + "/pools").session(userSession))
+			.andExpect(status().isOk())
+			
+			// assert
+			.andExpect(jsonPath("$[?(@.name==" + poolName + ")]").exists());
 
-		// assert
-		QuestionPool[] pools = mapper
-		        .readValue(response.getContentAsString(), QuestionPool[].class);
-		assertTrue("Ammount of questionPools not correct", pools.length == 3);
 	}
 }

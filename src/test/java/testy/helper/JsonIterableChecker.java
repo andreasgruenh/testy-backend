@@ -39,6 +39,7 @@ public class JsonIterableChecker {
 		try {
 			JsonPath.parse(s).read("$[0]", type);			
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			return false;
 		}
 		return true;

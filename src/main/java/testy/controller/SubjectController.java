@@ -16,9 +16,6 @@ import testy.dataaccess.QuestionPoolRepository;
 import testy.dataaccess.SubjectRepository;
 import testy.domain.Subject;
 import testy.domain.test.QuestionPool;
-import testy.domain.util.Views;
-
-import com.fasterxml.jackson.annotation.JsonView;
 
 @RestController
 @RequestMapping("/subjects")
@@ -46,14 +43,12 @@ public class SubjectController extends ApiController {
 		return createdSubject;
 	}
 	
-	@JsonView(Views.Summary.class)
 	@RequestMapping(value = "/{id}/pools", method = RequestMethod.GET)
 	public Collection<QuestionPool> getQuestionPools(@PathVariable("id") long id) {
 		return subjectRepo.findById(id).getQuestionPools();
 	}
 	
 	@NeedsLoggedInAccount(admin = "true")
-	@JsonView(Views.Summary.class)
 	@ResponseStatus(HttpStatus.CREATED)
 	@RequestMapping(value = "/{id}/pools", method = RequestMethod.POST)
 	public QuestionPool createQuestionPool(@PathVariable("id") long id, @RequestBody QuestionPool postedPool) {

@@ -15,7 +15,6 @@ import javax.persistence.OneToMany;
 import testy.domain.Subject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 public class QuestionPool {
@@ -27,7 +26,7 @@ public class QuestionPool {
 	private String name;
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnoreProperties({"questions"})
+	@JsonIgnore
 	private Set<Category> categories = new HashSet<Category>();
 	
 	private int percentageToPass;
@@ -50,13 +49,18 @@ public class QuestionPool {
 		this.name = name;
 	}
 
-	@JsonIgnore
 	public int getMaxScoreOfConcreteTest() {
 		int result = 0;
 		for(Category category: categories) {
 			result += category.getMaxScore();
 		}
 		return result;
+	}
+	
+	// Is needed so that it can be ignored on posted pools
+	@Deprecated
+	public void setMaxScoreOfConcreteTest(int maxScoreOfConcreteTest) {
+		
 	}
 
 	public int getPercentageToPass() {
