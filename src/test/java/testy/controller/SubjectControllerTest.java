@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.ResultActions;
 
 import testy.dataaccess.SubjectRepository;
 import testy.domain.Subject;
@@ -135,15 +136,18 @@ public class SubjectControllerTest extends ControllerTest {
 
 		// arrange
 		QuestionPool newPool = new QuestionPool("newPool");
+		newPool.setSubject(testClasses.subject1);
 		newPool.setPercentageToPass(200);
 
 		// act
-		mockMvc.perform(post("/subjects/" + testClasses.subject1.getId() + "/pools").session(userSession)
+		ResultActions result = mockMvc.perform(post("/subjects/" + testClasses.subject1.getId() + "/pools").session(userSession)
 			.contentType(MediaType.APPLICATION_JSON)
-			.content(mapper.writeValueAsString(newPool)))
+			.content(mapper.writeValueAsString(newPool)));
+		
+		System.out.println(mapper.writeValueAsString(newPool));
 				
 			// assert
-			.andExpect(status().isForbidden());
+			result.andExpect(status().isForbidden());
 	}
 
 	@NeedsSessions
@@ -154,6 +158,7 @@ public class SubjectControllerTest extends ControllerTest {
 
 		// arrange
 		QuestionPool newPool = new QuestionPool("newPool");
+		newPool.setSubject(testClasses.subject1);
 		newPool.setPercentageToPass(200);
 
 		// act
@@ -175,9 +180,10 @@ public class SubjectControllerTest extends ControllerTest {
 	public void POST_subjectsIdPools_withCorrectPermissions_shouldCreatePool() throws Exception {
 
 		// arrange
-		String poolName = "Very new Pool!";
+		String poolName = "Very new Pool!2";
 		QuestionPool newPool = new QuestionPool(poolName);
-		newPool.setPercentageToPass(200);
+		newPool.setSubject(testClasses.subject1);
+		newPool.setPercentageToPass(250);
 		mockMvc
 			.perform(post("/subjects/" + testClasses.subject1.getId() + "/pools").session(adminSession)
 			.contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(newPool)))

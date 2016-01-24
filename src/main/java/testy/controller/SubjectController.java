@@ -52,6 +52,7 @@ public class SubjectController extends ApiController {
 	@ResponseStatus(HttpStatus.CREATED)
 	@RequestMapping(value = "/{id}/pools", method = RequestMethod.POST)
 	public QuestionPool createQuestionPool(@PathVariable("id") long id, @RequestBody QuestionPool postedPool) {
+		System.out.println("Test");
 		QuestionPool newPool = new QuestionPool(postedPool.getName());
 		newPool.setPercentageToPass(postedPool.getPercentageToPass());
 		Subject subject = subjectRepo.findById(id);

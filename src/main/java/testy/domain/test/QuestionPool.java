@@ -97,7 +97,6 @@ public class QuestionPool {
 		return subject;
 	}
 
-	@JsonIgnore
 	public void setSubject(Subject subject) {
 		this.subject = subject;
 		if(!subject.getQuestionPools().contains(this)) {
