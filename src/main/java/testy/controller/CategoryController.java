@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import testy.dataaccess.CategoryRepository;
 import testy.domain.question.AbstractQuestion;
 import testy.domain.test.Category;
+import testy.domain.util.Views.Summary;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 @RestController
 @RequestMapping("/categories")
@@ -20,6 +23,7 @@ public class CategoryController extends ApiController {
 	@Autowired
 	CategoryRepository catRepo;
 	
+	@JsonView(Summary.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public Category getCategory(@PathVariable("id") long id) {
 		return catRepo.findById(id);

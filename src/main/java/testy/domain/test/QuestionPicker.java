@@ -22,7 +22,7 @@ public class QuestionPicker {
 		Set<Category> resultSet = new HashSet<Category>();
 		
 		for(Category cat: categories) {
-			Category strippedCat = new Category();
+			Category strippedCat = new Category(cat.getName());
 			strippedCat.addAllQuestions(getRandomQuestionsFrom(cat));
 			resultSet.add(strippedCat);
 		}

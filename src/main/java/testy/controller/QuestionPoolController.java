@@ -1,6 +1,7 @@
 package testy.controller;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,8 +16,14 @@ import testy.dataaccess.AccountRepository;
 import testy.dataaccess.CategoryRepository;
 import testy.dataaccess.QuestionPoolRepository;
 import testy.dataaccess.SubjectRepository;
+import testy.domain.question.AbstractAnswer;
 import testy.domain.test.Category;
+import testy.domain.test.QuestionPicker;
 import testy.domain.test.QuestionPool;
+import testy.domain.test.TestValidator;
+import testy.domain.util.Views.Summary;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 @RestController
 @RequestMapping("/pools")
@@ -32,6 +39,12 @@ public class QuestionPoolController extends ApiController {
 	QuestionPoolRepository questionPoolRepo;
 	
 	@Autowired
+	QuestionPicker picker;
+	
+	@Autowired
+	TestValidator validator;
+	
+	@Autowired
 	CategoryRepository catRepo;
 	
 	@NeedsLoggedInAccount(admin = "true")
@@ -41,6 +54,7 @@ public class QuestionPoolController extends ApiController {
 	}
 	
 	@NeedsLoggedInAccount(admin = "true")
+	@JsonView(Summary.class)
 	@RequestMapping(value = "/{id}/categories", method = RequestMethod.GET)
 	public Collection<Category> getAllCategories(@PathVariable("id") long id) {
 		return questionPoolRepo.findById(id).getCategories();
@@ -60,5 +74,15 @@ public class QuestionPoolController extends ApiController {
 		pool.addCategory(newCategory);
 		questionPoolRepo.save(pool);
 		return newCategory;	
+	}
+	
+	@RequestMapping(value = "/{id}/test", method = RequestMethod.GET)
+	public Collection<Category> getTest(@PathVariable("id") long id) {
+		return picker.generateCategoriesWithRandomQuestionsFrom(questionPoolRepo.findById(id));
+	}
+	
+	@RequestMapping(value = "/{id}/test", method = RequestMethod.POST)
+	public int getTestResult(@PathVariable("id") long id, @RequestBody Set<AbstractAnswer<?>> answers) {
+		return validator.validateTest(answers);
 	}
 }

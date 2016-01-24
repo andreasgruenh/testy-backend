@@ -6,18 +6,25 @@ import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import testy.domain.question.AbstractAnswer;
 
 @Entity
+@JsonTypeName("MCAnswer")
 public class MCAnswer extends AbstractAnswer<MCQuestion> {
 	
 	private static MCAnswerValidator validator = new MCAnswerValidator();
 	
 	@OneToMany
-	private final Set<MCPossibility> checkedPossibilities;
+	private Set<MCPossibility> checkedPossibilities;
 	
 	@OneToMany
-	private final Set<MCPossibility> uncheckedPossibilities;
+	private Set<MCPossibility> uncheckedPossibilities;
+	
+	@Deprecated
+	public MCAnswer() {
+	}
 	
 	public MCAnswer(MCQuestion question, Set<MCPossibility> checkedAnswers, Set<MCPossibility> uncheckedAnswers) {
 		this.question = question;

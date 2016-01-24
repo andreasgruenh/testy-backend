@@ -9,14 +9,12 @@ import javax.persistence.OneToOne;
 import testy.domain.question.image.ImageQuestion;
 import testy.domain.question.mc.MCQuestion;
 import testy.domain.test.Category;
-import testy.domain.util.Views;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include = As.PROPERTY, property = "type")
@@ -29,13 +27,12 @@ public abstract class AbstractQuestion {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	protected long id;
 	
-	@JsonIgnore
+	@JsonIgnoreProperties({ "questions" })
 	@OneToOne
 	private Category category;
 	
 	protected String questionString;
 	
-	@JsonView(Views.Summary.class)
 	protected final int maxScore = 10;
 	
 	public long getId() {
