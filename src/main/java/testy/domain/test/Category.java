@@ -13,23 +13,18 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import testy.domain.question.AbstractQuestion;
-import testy.domain.util.Views;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 public class Category {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@JsonView(Views.Summary.class)
 	protected long id;
 	
-	@JsonView(Views.Summary.class)
 	private String name;
 	
-	@JsonView(Views.Summary.class)
 	private int maxScore;
 	
 	@JsonIgnore

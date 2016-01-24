@@ -1,5 +1,7 @@
+
 package testy.controller;
 
+import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
@@ -48,6 +50,34 @@ public class QuestionPoolControllerTest extends ControllerTest {
 				jsonPath("$.subject.id", is(equalTo((int) testClasses.questionPool1.getSubject().getId()))));
 	}
 
+	@NeedsSessions
+	@NeedsTestClasses
+	@Test
+	public void GET_poolsIdCategories_withoutPermissions_shouldReturn403() throws Exception {
+
+		// act
+		mockMvc.perform(
+			get("/pools/" + testClasses.questionPool1.getId() + "/categories").session(userSession))
+			.andExpect(status().isForbidden());
+	}
+	
+	@NeedsSessions
+	@NeedsTestClasses
+	@Test
+	public void GET_poolsIdCategories_withPermissions_shouldReturnCollectionOfCategories() throws Exception {
+
+		// act
+		mockMvc.perform(
+			get("/pools/" + testClasses.questionPool1.getId() + "/categories").session(adminSession))
+			.andExpect(status().isOk())
+			
+			// assert
+			.andExpect(jsonPath("$[0].id", is(any(Integer.class))))
+			.andExpect(jsonPath("$[0].name", is(any(String.class))))
+			.andExpect(jsonPath("$[0].maxScore", is(any(Integer.class))))
+			.andExpect(jsonPath("$[0].questions").doesNotExist());
+	}
+	
 	@NeedsSessions
 	@NeedsTestClasses
 	@Test

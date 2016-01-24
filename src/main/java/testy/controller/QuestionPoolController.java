@@ -1,5 +1,7 @@
 package testy.controller;
 
+import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +38,12 @@ public class QuestionPoolController extends ApiController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public QuestionPool getQuestionPool(@PathVariable("id") long id) {
 		return questionPoolRepo.findById(id);
+	}
+	
+	@NeedsLoggedInAccount(admin = "true")
+	@RequestMapping(value = "/{id}/categories", method = RequestMethod.GET)
+	public Collection<Category> getAllCategories(@PathVariable("id") long id) {
+		return questionPoolRepo.findById(id).getCategories();
 	}
 	
 	@NeedsLoggedInAccount(admin = "true")
