@@ -1,7 +1,7 @@
 package testy.controller;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -82,7 +82,7 @@ public class QuestionPoolController extends ApiController {
 	}
 	
 	@RequestMapping(value = "/{id}/test", method = RequestMethod.POST)
-	public int getTestResult(@PathVariable("id") long id, @RequestBody Set<AbstractAnswer<?>> answers) {
-		return validator.validateTest(answers);
+	public int getTestResult(@PathVariable("id") long id, @RequestBody AbstractAnswer[] answers) {
+		return validator.validateTest(Arrays.asList(answers));
 	}
 }

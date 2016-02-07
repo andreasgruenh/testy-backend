@@ -10,16 +10,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import testy.domain.question.mc.MCAnswer;
-import testy.domain.question.mc.MCPossibility;
-import testy.domain.question.mc.MCQuestion;
 import testy.domain.test.Category;
 import testy.helper.annotations.NeedsSessions;
 import testy.helper.annotations.NeedsTestClasses;
@@ -142,17 +136,21 @@ public class QuestionPoolControllerTest extends ControllerTest {
 	@Test
 	public void POST_poolsIdTest_shouldReturnTestScore() throws Exception {
 
-		String answerString = "[{\"type\":\"MCAnswer\",\"id\":0,\"question\":{\"id\":2},\"checkedPossibilities\":[{\"id\":4,\"text\":\"A1\"}],\"uncheckedPossibilities\":[{\"id\":3,\"text\":\"A2\"}]}]";
-		System.out.println(answerString);
-		
+		String answerString = "[{\"type\":\"MCAnswer\",\"id\":0,\"question\":{\"type\":\"MCQuestion\", \"id\":2},\"checkedPossibilities\":[{\"id\":4,\"text\":\"A1\"}],\"uncheckedPossibilities\":[{\"id\":3,\"text\":\"A2\"}]}]";
+		int expectedScore = 5;
 		
 		// act
-		System.out.println(mockMvc.perform(post("/pools/" + testClasses.questionPool1.getId() + "/test").session(userSession)
+		int score = -1;
+		try {
+			score = Integer.parseInt(mockMvc.perform(post("/pools/" + testClasses.questionPool1.getId() + "/test").session(userSession)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(answerString))
-		
+			.andReturn().getResponse().getContentAsString());
+		} catch( Exception e) {
+			
+		}
 		// assert
-		.andReturn().getResponse().getContentAsString());
+		assertTrue("Testscroe should be " + expectedScore + " but was " + score, score == expectedScore);
 	}
 	
 }
