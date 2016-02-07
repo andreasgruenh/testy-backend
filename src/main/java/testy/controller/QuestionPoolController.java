@@ -20,7 +20,6 @@ import testy.domain.question.AbstractAnswer;
 import testy.domain.test.Category;
 import testy.domain.test.QuestionPicker;
 import testy.domain.test.QuestionPool;
-import testy.domain.test.Test;
 import testy.domain.test.TestValidator;
 import testy.domain.util.Views.Summary;
 
@@ -78,8 +77,8 @@ public class QuestionPoolController extends ApiController {
 	}
 	
 	@RequestMapping(value = "/{id}/test", method = RequestMethod.GET)
-	public Test getTest(@PathVariable("id") long id) {
-		return picker.generateTestWithRandomQuestionsFrom(questionPoolRepo.findById(id));
+	public Collection<Category> getTest(@PathVariable("id") long id) {
+		return picker.generateCategoriesWithRandomQuestionsFrom(questionPoolRepo.findById(id));
 	}
 	
 	@RequestMapping(value = "/{id}/test", method = RequestMethod.POST)

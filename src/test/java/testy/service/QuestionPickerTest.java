@@ -2,6 +2,8 @@ package testy.service;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,10 +56,10 @@ public class QuestionPickerTest {
 
 	@Test
 	public void generateCategories_shouldReturnCategoriesWithCorrectTotalScore() {
-		testy.domain.test.Test test = picker.generateTestWithRandomQuestionsFrom(pool);
+		Set<Category> categories = picker.generateCategoriesWithRandomQuestionsFrom(pool);
 		int totalScore = 0;
 
-		for (Category cat : test.getCategories()) {
+		for (Category cat : categories) {
 			int scoreOfCategory = 0;
 			for (AbstractQuestion question : cat.getQuestions()) {
 				scoreOfCategory += question.getMaxScore();

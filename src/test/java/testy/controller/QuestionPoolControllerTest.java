@@ -142,7 +142,7 @@ public class QuestionPoolControllerTest extends ControllerTest {
 	@Test
 	public void POST_poolsIdTest_shouldReturnTestScore() throws Exception {
 
-		String answerString = "[{\"type\":\"MCAnswer\",\"id\":0,\"question\":{\"type\":\"MCQuestion\",\"id\":2},\"checkedPossibilities\":[{\"id\":4,\"text\":\"A1\"}],\"uncheckedPossibilities\":[{\"id\":3,\"text\":\"A2\"}]}]";
+		String answerString = "[{\"type\":\"MCAnswer\",\"id\":0,\"question\":{\"id\":2},\"checkedPossibilities\":[{\"id\":4,\"text\":\"A1\"}],\"uncheckedPossibilities\":[{\"id\":3,\"text\":\"A2\"}]}]";
 		System.out.println(answerString);
 		
 		

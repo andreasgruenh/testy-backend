@@ -31,7 +31,7 @@ public class CategoryController extends ApiController {
 	
 	@NeedsLoggedInAccount(admin = "true")
 	@RequestMapping(value = "/{id}/questions", method = RequestMethod.GET)
-	public Set<AbstractQuestion> getQuestions(@PathVariable("id") long id) {
+	public Set<AbstractQuestion> updateCategory(@PathVariable("id") long id) {
 		Category category = catRepo.findById(id);
 		return category.getQuestions();
 	}
