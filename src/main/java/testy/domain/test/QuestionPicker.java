@@ -16,7 +16,7 @@ public class QuestionPicker {
 	/* 
 	 * Returns the Category with random questions from the original catgegories
 	 */
-	public Set<Category> generateCategoriesWithRandomQuestionsFrom(QuestionPool pool) {
+	public Test generateTestWithRandomQuestionsFrom(QuestionPool pool) {
 		
 		Set<Category> categories =  pool.getCategories();
 		Set<Category> resultSet = new HashSet<Category>();
@@ -26,7 +26,7 @@ public class QuestionPicker {
 			strippedCat.addAllQuestions(getRandomQuestionsFrom(cat));
 			resultSet.add(strippedCat);
 		}
-		return resultSet;
+		return new Test(resultSet);
 	};
 	
 	private Set<AbstractQuestion> getRandomQuestionsFrom(Category cat) {
