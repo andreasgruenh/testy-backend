@@ -53,6 +53,7 @@ public class SubjectControllerTest extends ControllerTest {
 			// assert
 			.andExpect(jsonPath("$[0].id", is(any(Integer.class))))
 			.andExpect(jsonPath("$[0].name", is(any(String.class))))
+			.andExpect(jsonPath("$[0].description", is(any(String.class))))
 			.andExpect(jsonPath("$[0].questionPools").doesNotExist());
 
 	}
@@ -117,10 +118,10 @@ public class SubjectControllerTest extends ControllerTest {
 	public void GET_subjectsIdPools_shouldReturnCorrectProperties() throws Exception {
 
 		// act
-		mockMvc.perform(get("/subjects/" + testClasses.subject1.getId() + "/pools").session(userSession))
-			.andExpect(status().isOk())
+		ResultActions actions = mockMvc.perform(get("/subjects/" + testClasses.subject1.getId() + "/pools").session(userSession));
 			
-			// assert
+		// assert
+		actions.andExpect(status().isOk())
 			.andExpect(jsonPath("$[0].id", is(any(Integer.class))))
 			.andExpect(jsonPath("$[0].name", is(any(String.class))))
 			.andExpect(jsonPath("$[0].maxScoreOfConcreteTest", is(any(Integer.class))))

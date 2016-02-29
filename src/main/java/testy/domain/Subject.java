@@ -24,6 +24,8 @@ public class Subject {
 	
 	private String name;
 	
+	private String description;
+	
 	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<QuestionPool> questionPools = new HashSet<QuestionPool>();
 
@@ -45,6 +47,14 @@ public class Subject {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	@JsonIgnore
