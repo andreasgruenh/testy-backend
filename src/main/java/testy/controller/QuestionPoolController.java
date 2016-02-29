@@ -53,6 +53,17 @@ public class QuestionPoolController extends ApiController {
 	}
 	
 	@NeedsLoggedInAccount(admin = "true")
+	@RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
+	public QuestionPool updateQuestionPool(@PathVariable("id") long id, @RequestBody QuestionPool changedPool) {
+		QuestionPool oldPool = questionPoolRepo.findById(id);
+		oldPool.setDescription(changedPool.getDescription());
+		oldPool.setName(changedPool.getName());
+		oldPool.setPercentageToPass(changedPool.getPercentageToPass());
+		questionPoolRepo.save(oldPool);
+		return oldPool;
+	}
+	
+	@NeedsLoggedInAccount(admin = "true")
 	@JsonView(Summary.class)
 	@RequestMapping(value = "/{id}/categories", method = RequestMethod.GET)
 	public Collection<Category> getAllCategories(@PathVariable("id") long id) {

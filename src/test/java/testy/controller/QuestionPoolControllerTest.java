@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -15,8 +16,11 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import testy.domain.test.Category;
+import testy.domain.test.QuestionPool;
 import testy.helper.annotations.NeedsSessions;
 import testy.helper.annotations.NeedsTestClasses;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class QuestionPoolControllerTest extends ControllerTest {
 
@@ -28,6 +32,52 @@ public class QuestionPoolControllerTest extends ControllerTest {
 		// act + assert
 		mockMvc.perform(get("/pools/" + testClasses.questionPool1.getId()).session(userSession)).andExpect(
 			status().isForbidden());
+	}
+	
+	@NeedsSessions
+	@NeedsTestClasses
+	@Test
+	public void PATCH_poolsId_withoutPermissionsShouldReturn403() throws JsonProcessingException, Exception {
+		
+		// act
+		mockMvc.perform(
+			patch("/pools/" + testClasses.questionPool1.getId()).session(userSession)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(testClasses.questionPool1)))
+
+			// assert
+			.andExpect(status().isForbidden());
+		
+	}
+	
+	@NeedsSessions
+	@NeedsTestClasses
+	@Test
+	public void PATCH_poolsId_withPermissionsShouldReturnUpdatedPool() throws Exception {
+		QuestionPool newPool = testClasses.questionPool1;
+		newPool.setPercentageToPass(100);
+		newPool.setName("geändert");
+
+		// act
+		MockHttpServletResponse response = mockMvc
+			.perform(
+				patch("/pools/" + testClasses.questionPool1.getId()).session(adminSession)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(mapper.writeValueAsString(newPool)))
+			.andExpect(status().isOk())
+			.andReturn().getResponse();
+		QuestionPool actualPool = mapper.readValue(response.getContentAsString(), QuestionPool.class);
+
+		// assert
+		assertTrue("Name should have been updated. Expected: " + newPool.getName() +
+			"But was " + actualPool.getName(),
+			actualPool.getName().equals(newPool.getName()));
+		assertTrue("Description should have been updated. Expected: " + newPool.getDescription() +
+			"But was " + actualPool.getDescription(),
+			actualPool.getDescription().equals(newPool.getDescription()));
+		assertTrue("Percentage to pass should have been updated. Expected: " + newPool.getPercentageToPass() +
+			"But was " + actualPool.getPercentageToPass(),
+			actualPool.getPercentageToPass() == newPool.getPercentageToPass());
 	}
 
 	@NeedsSessions
@@ -43,6 +93,7 @@ public class QuestionPoolControllerTest extends ControllerTest {
 		// assert
 			.andExpect(jsonPath("$.id", is(equalTo((int) testClasses.questionPool1.getId()))))
 			.andExpect(jsonPath("$.name", is(equalTo(testClasses.questionPool1.getName()))))
+			.andExpect(jsonPath("$.description", is(equalTo(testClasses.questionPool1.getDescription()))))
 			.andExpect(jsonPath("$.categories").doesNotExist())
 			.andExpect(
 				jsonPath("$.percentageToPass", is(equalTo(testClasses.questionPool1.getPercentageToPass()))))

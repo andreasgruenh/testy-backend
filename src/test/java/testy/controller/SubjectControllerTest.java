@@ -62,7 +62,7 @@ public class SubjectControllerTest extends ControllerTest {
 	@NeedsSessions
 	@NeedsTestClasses
 	@Test
-	public void UPDATE_subjects_id_withoutAdminPermissions_shouldReturn403() throws Exception {
+	public void PATH_subjects_id_withoutAdminPermissions_shouldReturn403() throws Exception {
 
 		// act
 		mockMvc.perform(
@@ -77,7 +77,7 @@ public class SubjectControllerTest extends ControllerTest {
 	@NeedsSessions
 	@NeedsTestClasses
 	@Test
-	public void UPDATE_subjects_id_withAdminPermissions_shouldReturnUpdatedSubject() throws Exception {
+	public void PATH_subjects_id_withAdminPermissions_shouldReturnUpdatedSubject() throws Exception {
 
 		Subject newSubject = new Subject("Geändert");
 		newSubject.setDescription("Neue Beschreibung");
