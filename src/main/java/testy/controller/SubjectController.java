@@ -43,6 +43,16 @@ public class SubjectController extends ApiController {
 		return createdSubject;
 	}
 	
+	@NeedsLoggedInAccount(admin = "true")
+	@RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
+	public Subject updateSubject(@PathVariable("id") long id, @RequestBody Subject changedSubject) {
+		Subject oldSubject = subjectRepo.findById(id);
+		oldSubject.setDescription(changedSubject.getDescription());
+		oldSubject.setName(changedSubject.getName());
+		subjectRepo.save(oldSubject);
+		return oldSubject;
+	}
+	
 	@RequestMapping(value = "/{id}/pools", method = RequestMethod.GET)
 	public Collection<QuestionPool> getQuestionPools(@PathVariable("id") long id) {
 		return subjectRepo.findById(id).getQuestionPools();

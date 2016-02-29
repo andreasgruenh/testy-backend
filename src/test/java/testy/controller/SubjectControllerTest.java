@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,6 +62,48 @@ public class SubjectControllerTest extends ControllerTest {
 	@NeedsSessions
 	@NeedsTestClasses
 	@Test
+	public void UPDATE_subjects_id_withoutAdminPermissions_shouldReturn403() throws Exception {
+
+		// act
+		mockMvc.perform(
+			patch("/subjects/" + testClasses.subject1.getId()).session(userSession)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(testClasses.subject1)))
+
+			// assert
+			.andExpect(status().isForbidden());
+	}
+
+	@NeedsSessions
+	@NeedsTestClasses
+	@Test
+	public void UPDATE_subjects_id_withAdminPermissions_shouldReturnUpdatedSubject() throws Exception {
+
+		Subject newSubject = new Subject("Geändert");
+		newSubject.setDescription("Neue Beschreibung");
+
+		// act
+		MockHttpServletResponse response = mockMvc
+			.perform(
+				patch("/subjects/" + testClasses.subject1.getId()).session(adminSession)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(mapper.writeValueAsString(newSubject)))
+			.andExpect(status().isOk())
+			.andReturn().getResponse();
+		Subject actualSubject = mapper.readValue(response.getContentAsString(), Subject.class);
+
+		// assert
+		assertTrue("Name should have been updated. Expected: " + newSubject.getName() +
+			"But was " + actualSubject.getName(),
+			actualSubject.getName().equals(newSubject.getName()));
+		assertTrue("Description should have been updated. Expected: " + newSubject.getDescription() +
+			"But was " + actualSubject.getDescription(),
+			actualSubject.getDescription().equals(newSubject.getDescription()));
+	}
+
+	@NeedsSessions
+	@NeedsTestClasses
+	@Test
 	public void POST_subjects_withoutAdminPermissions_shouldReturn403() throws Exception {
 
 		// arrange
@@ -85,15 +128,15 @@ public class SubjectControllerTest extends ControllerTest {
 		// act
 		MockHttpServletResponse response = mockMvc
 			.perform(post("/subjects/").session(adminSession).contentType(MediaType.APPLICATION_JSON)
-			.content(mapper.writeValueAsString(expectedSubject)))
+				.content(mapper.writeValueAsString(expectedSubject)))
 			.andExpect(status().isCreated()).andReturn().getResponse();
 
 		// assert
 		Subject createdSubject = mapper.readValue(response.getContentAsString(), Subject.class);
-		assertTrue("Name of new subject should be " + 
-					expectedSubject.getName() + 
-					" but was " + 
-					createdSubject.getName(), 
+		assertTrue("Name of new subject should be " +
+			expectedSubject.getName() +
+			" but was " +
+			createdSubject.getName(),
 			createdSubject.getName().equals(expectedSubject.getName()));
 	}
 
@@ -108,7 +151,7 @@ public class SubjectControllerTest extends ControllerTest {
 			.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
 		// assert
-		assertTrue("Array of questionPools should be returned but was: " + response, 
+		assertTrue("Array of questionPools should be returned but was: " + response,
 			JsonIterableChecker.representsIterableOfClass(response, QuestionPool.class));
 	}
 
@@ -118,8 +161,9 @@ public class SubjectControllerTest extends ControllerTest {
 	public void GET_subjectsIdPools_shouldReturnCorrectProperties() throws Exception {
 
 		// act
-		ResultActions actions = mockMvc.perform(get("/subjects/" + testClasses.subject1.getId() + "/pools").session(userSession));
-			
+		ResultActions actions = mockMvc.perform(get("/subjects/" + testClasses.subject1.getId() + "/pools")
+			.session(userSession));
+
 		// assert
 		actions.andExpect(status().isOk())
 			.andExpect(jsonPath("$[0].id", is(any(Integer.class))))
@@ -129,7 +173,7 @@ public class SubjectControllerTest extends ControllerTest {
 			.andExpect(jsonPath("$[0].categories").doesNotExist());
 
 	}
-	
+
 	@NeedsSessions
 	@NeedsTestClasses
 	@Test
@@ -141,14 +185,15 @@ public class SubjectControllerTest extends ControllerTest {
 		newPool.setPercentageToPass(200);
 
 		// act
-		ResultActions result = mockMvc.perform(post("/subjects/" + testClasses.subject1.getId() + "/pools").session(userSession)
+		ResultActions result = mockMvc.perform(post("/subjects/" + testClasses.subject1.getId() + "/pools")
+			.session(userSession)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(mapper.writeValueAsString(newPool)));
-		
+
 		System.out.println(mapper.writeValueAsString(newPool));
-				
-			// assert
-			result.andExpect(status().isForbidden());
+
+		// assert
+		result.andExpect(status().isForbidden());
 	}
 
 	@NeedsSessions
@@ -165,10 +210,10 @@ public class SubjectControllerTest extends ControllerTest {
 		// act
 		mockMvc
 			.perform(post("/subjects/" + testClasses.subject1.getId() + "/pools")
-			.session(adminSession).contentType(MediaType.APPLICATION_JSON)
-			.content(mapper.writeValueAsString(newPool)))
+				.session(adminSession).contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(newPool)))
 			.andExpect(status().isCreated())
-			
+
 			// assert
 			.andExpect(jsonPath("$.name", is(equalTo(newPool.getName()))))
 			.andExpect(jsonPath("$.percentageToPass", is(equalTo(newPool.getPercentageToPass()))))
@@ -187,14 +232,14 @@ public class SubjectControllerTest extends ControllerTest {
 		newPool.setPercentageToPass(250);
 		mockMvc
 			.perform(post("/subjects/" + testClasses.subject1.getId() + "/pools").session(adminSession)
-			.contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(newPool)))
+				.contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(newPool)))
 			.andExpect(status().isCreated());
 
 		// act
 		mockMvc
 			.perform(get("/subjects/" + testClasses.subject1.getId() + "/pools").session(userSession))
 			.andExpect(status().isOk())
-			
+
 			// assert
 			.andExpect(jsonPath("$[?(@.name==" + poolName + ")]").exists());
 
