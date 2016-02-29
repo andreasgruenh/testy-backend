@@ -44,6 +44,12 @@ public class SubjectController extends ApiController {
 	}
 	
 	@NeedsLoggedInAccount(admin = "true")
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public void deleteSubject(@PathVariable long id) {
+		subjectRepo.delete(id);
+	}
+	
+	@NeedsLoggedInAccount(admin = "true")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
 	public Subject updateSubject(@PathVariable("id") long id, @RequestBody Subject changedSubject) {
 		Subject oldSubject = subjectRepo.findById(id);

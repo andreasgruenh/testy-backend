@@ -71,4 +71,11 @@ public class Subject {
 			pool.setSubject(this);
 		}
 	}
+	
+	public void removeQuestionPool(QuestionPool pool) {
+		if(pool == null) {
+			throw new NullPointerException();
+		}
+		questionPools.remove(pool);
+	}
 }

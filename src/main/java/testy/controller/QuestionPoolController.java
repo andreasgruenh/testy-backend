@@ -64,6 +64,14 @@ public class QuestionPoolController extends ApiController {
 	}
 	
 	@NeedsLoggedInAccount(admin = "true")
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public void deleteQuestionPool(@PathVariable("id") long id) {
+		QuestionPool pool = questionPoolRepo.findById(id);
+		pool.getSubject().removeQuestionPool(pool);
+		questionPoolRepo.delete(id);
+	}
+	
+	@NeedsLoggedInAccount(admin = "true")
 	@JsonView(Summary.class)
 	@RequestMapping(value = "/{id}/categories", method = RequestMethod.GET)
 	public Collection<Category> getAllCategories(@PathVariable("id") long id) {

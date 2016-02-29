@@ -2,11 +2,13 @@ package testy.controller;
 
 import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,7 +64,7 @@ public class SubjectControllerTest extends ControllerTest {
 	@NeedsSessions
 	@NeedsTestClasses
 	@Test
-	public void PATH_subjects_id_withoutAdminPermissions_shouldReturn403() throws Exception {
+	public void PACTH_subjects_id_withoutAdminPermissions_shouldReturn403() throws Exception {
 
 		// act
 		mockMvc.perform(
@@ -77,7 +79,7 @@ public class SubjectControllerTest extends ControllerTest {
 	@NeedsSessions
 	@NeedsTestClasses
 	@Test
-	public void PATH_subjects_id_withAdminPermissions_shouldReturnUpdatedSubject() throws Exception {
+	public void PACTH_subjects_id_withAdminPermissions_shouldReturnUpdatedSubject() throws Exception {
 
 		Subject newSubject = new Subject("Geändert");
 		newSubject.setDescription("Neue Beschreibung");
@@ -99,6 +101,38 @@ public class SubjectControllerTest extends ControllerTest {
 		assertTrue("Description should have been updated. Expected: " + newSubject.getDescription() +
 			"But was " + actualSubject.getDescription(),
 			actualSubject.getDescription().equals(newSubject.getDescription()));
+	}
+	
+	@NeedsSessions
+	@NeedsTestClasses
+	@Test
+	public void DELETE_subjects_id_withoutAdminPermissions_shouldReturn403() throws Exception {
+
+		// act
+		mockMvc.perform(
+			delete("/subjects/" + testClasses.subject1.getId()).session(userSession))
+
+			// assert
+			.andExpect(status().isForbidden());
+		
+		mockMvc.perform(get("/subjects/").session(userSession))
+			.andExpect(jsonPath("$.*", hasSize(1)));
+	}
+	
+	@NeedsSessions
+	@NeedsTestClasses
+	@Test
+	public void DELETE_subjects_id_withAdminPermissions_shouldDeleteSubject() throws Exception {
+
+		// act
+		mockMvc.perform(
+			delete("/subjects/" + testClasses.subject1.getId()).session(adminSession))
+
+			// assert
+			.andExpect(status().isOk());
+		
+		mockMvc.perform(get("/subjects/").session(userSession))
+			.andExpect(jsonPath("$.*", hasSize(0)));
 	}
 
 	@NeedsSessions

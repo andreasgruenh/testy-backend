@@ -3,8 +3,10 @@ package testy.controller;
 
 import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -78,6 +80,37 @@ public class QuestionPoolControllerTest extends ControllerTest {
 		assertTrue("Percentage to pass should have been updated. Expected: " + newPool.getPercentageToPass() +
 			"But was " + actualPool.getPercentageToPass(),
 			actualPool.getPercentageToPass() == newPool.getPercentageToPass());
+	}
+	
+	@NeedsSessions
+	@NeedsTestClasses
+	@Test
+	public void DELETE_poolsId_withoutPermissionsShouldFail() throws Exception {
+		
+		// act
+		mockMvc.perform(
+			delete("/pools/" + testClasses.questionPool1.getId()).session(userSession))
+		.andExpect(status().isForbidden());
+		
+		// assert
+		mockMvc
+		.perform(get("/subjects/" + testClasses.subject1.getId() + "/pools").session(userSession))
+		.andExpect(status().isOk()).andExpect(jsonPath("$.*", hasSize(1)));
+	}
+	
+	@NeedsSessions
+	@NeedsTestClasses
+	@Test
+	public void DELETE_poolsId_withPermissionsShouldDeletePool() throws Exception {
+		// act
+		mockMvc.perform(
+			delete("/pools/" + testClasses.questionPool1.getId()).session(adminSession))
+		.andExpect(status().isOk());
+		
+		// assert
+		mockMvc
+		.perform(get("/subjects/" + testClasses.subject1.getId() + "/pools").session(userSession))
+		.andExpect(status().isOk()).andExpect(jsonPath("$.*", hasSize(0)));
 	}
 
 	@NeedsSessions
