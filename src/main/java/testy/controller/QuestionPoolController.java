@@ -1,6 +1,5 @@
 package testy.controller;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +81,7 @@ public class QuestionPoolController extends ApiController {
 	}
 	
 	@RequestMapping(value = "/{id}/test", method = RequestMethod.POST)
-	public int getTestResult(@PathVariable("id") long id, @RequestBody AbstractAnswer[] answers) {
-		return validator.validateTest(Arrays.asList(answers));
+	public int getTestResult(@PathVariable("id") long id, @SuppressWarnings("rawtypes") @RequestBody AbstractAnswer[] answers) {
+		return validator.validateTest(answers);
 	}
 }

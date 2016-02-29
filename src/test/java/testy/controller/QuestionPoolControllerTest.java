@@ -125,10 +125,10 @@ public class QuestionPoolControllerTest extends ControllerTest {
 	public void GET_poolsIdTest_shouldReturnCategoriesWithQuestions() throws Exception {
 
 		// act
-		System.out.println(mockMvc.perform(get("/pools/" + testClasses.questionPool1.getId() + "/test").session(userSession))
+		mockMvc.perform(get("/pools/" + testClasses.questionPool1.getId() + "/test").session(userSession))
 		
 		// assert
-		.andExpect(jsonPath("$[0].questions[0].correct").doesNotExist()).andReturn().getResponse().getContentAsString());
+		.andExpect(jsonPath("$[0].questions[0].correct").doesNotExist()).andReturn().getResponse().getContentAsString();
 	}
 	
 	@NeedsSessions
@@ -140,17 +140,14 @@ public class QuestionPoolControllerTest extends ControllerTest {
 		int expectedScore = 5;
 		
 		// act
-		int score = -1;
-		try {
-			score = Integer.parseInt(mockMvc.perform(post("/pools/" + testClasses.questionPool1.getId() + "/test").session(userSession)
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(answerString))
-			.andReturn().getResponse().getContentAsString());
-		} catch( Exception e) {
-			
-		}
+		MockHttpServletResponse response = mockMvc
+				.perform(post("/pools/" + testClasses.questionPool1.getId() + "/test").session(userSession)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(answerString))
+				.andReturn().getResponse();
+		int score = Integer.parseInt(response.getContentAsString());
 		// assert
-		assertTrue("Testscroe should be " + expectedScore + " but was " + score, score == expectedScore);
+		assertTrue("Testscroe should be " + expectedScore + " but was " + response.getContentAsString(), score == expectedScore);
 	}
 	
 }

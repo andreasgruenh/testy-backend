@@ -7,7 +7,7 @@ import testy.domain.question.AbstractAnswer;
 @Service
 public class TestValidator {
 
-	public int validateTest(Iterable<AbstractAnswer> answers) {
+	public int validateTest(AbstractAnswer<?>[] answers) {
 		int score = 0;
 
 		for(AbstractAnswer<?> answer: answers) {
