@@ -12,6 +12,7 @@ import org.junit.Test;
 import testy.domain.question.AbstractQuestion;
 import testy.domain.question.mc.MCQuestion;
 import testy.domain.test.Category;
+import testy.domain.test.QuestionPool;
 import testy.helper.UnmodifiableChecker;
 
 public class CategoryTest {
@@ -55,6 +56,19 @@ public class CategoryTest {
 		category.removeQuestion(quest4);
 		assertFalse("Question should no longer be in category", category.getQuestions().contains(quest4));
 		assertTrue("Category of question should be null", quest4.getCategory() == null);
+	}
+	
+	@Test
+	public void setPool_shouldSetPoolAndSetCategoryInpool() {
+		
+		// arrange 
+		QuestionPool pool = new QuestionPool();
+		
+		// act
+		category.setPool(pool);
+		
+		// assert
+		assertTrue("Pool should be set correctly", pool.getCategories().contains(category));
 	}
 	
 	@Test(expected=NullPointerException.class)

@@ -48,9 +48,33 @@ public class QuestionPoolTest {
 		pool.addCategory(null);
 	}
 	
+	@Test
+	public void addCategory_shouldAddCategoryAndUpdatePoolOfCategory() {
+		
+		// arrange
+		Category newCat = new Category();
+		
+		// act
+		pool.addCategory(newCat);
+		
+		// assert
+		assertTrue("Category should be added", pool.getCategories().contains(newCat));
+		assertTrue("Pool of category should be set", newCat.getPool() == pool);
+	}
+	
 	@Test(expected=NullPointerException.class)
 	public void removeCategory_shouldThrowNPE_whenNullIsPassed() {
 		pool.removeCategory(null);
+	}
+	
+	@Test
+	public void removeCategory_shouldRemoveCategoryAndUnsetPoolOfCategory() {
+		// act
+		pool.removeCategory(category1);
+		
+		// assert
+		assertTrue("Category should be removed", !pool.getCategories().contains(category1));
+		assertTrue("Category should have no pool", category1.getPool() == null);
 	}
 	
 	@Test

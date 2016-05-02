@@ -1,11 +1,13 @@
 package testy.controller;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.iterableWithSize;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -127,7 +129,7 @@ public class CategoryControllerTest extends ControllerTest {
 	@NeedsTestClasses
 	@NeedsSessions
 	@Test
-	public void PATH_id_withAdminPermissions_shouldReturnChangedCategory() throws Exception {
+	public void PATCH_id_withAdminPermissions_shouldReturnChangedCategory() throws Exception {
 		// arrange
 		Category changedCat = new Category("Changed Category");
 		changedCat.setMaxScore(40);
@@ -141,5 +143,31 @@ public class CategoryControllerTest extends ControllerTest {
 			// assert
 			.andExpect(jsonPath("$.name", is(equalTo(changedCat.getName()))))
 			.andExpect(jsonPath("$.maxScore", is(equalTo(changedCat.getMaxScore()))));
+	}
+	
+	@NeedsTestClasses
+	@NeedsSessions
+	@Test
+	public void DELETE_id_withoutAdminPermissions_shouldFail() throws Exception {
+		// act
+		mockMvc.perform(
+			delete("/categories/" + testClasses.category1.getId()).session(userSession))
+				.andExpect(status().isForbidden());
+	}
+	
+	@NeedsTestClasses
+	@NeedsSessions
+	@Test
+	public void DELETE_id_withAdminPermissions_shouldDeleteCategory() throws Exception {
+		// act
+		mockMvc.perform(
+			delete("/categories/" + testClasses.category1.getId()).session(adminSession))
+				.andExpect(status().isOk());
+		
+		// assert
+		mockMvc
+		.perform(get("/pools/" + testClasses.questionPool1.getId() + "/categories").session(adminSession))
+		.andExpect(status().isOk()).andExpect(jsonPath("$.*", hasSize(0)));
+		
 	}
 }

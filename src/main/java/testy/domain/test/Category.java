@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import testy.domain.question.AbstractQuestion;
@@ -31,6 +32,9 @@ public class Category {
 	
 	@JsonView(Summary.class)
 	private int maxScore;
+	
+	@ManyToOne
+	private QuestionPool pool;
 	
 	@JsonView(Test.class)
 	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
@@ -63,6 +67,17 @@ public class Category {
 
 	public long getId() {
 		return id;
+	}
+	
+	public QuestionPool getPool() {
+		return pool;
+	}
+
+	public void setPool(QuestionPool pool) {
+		this.pool = pool;
+		if(pool != null && !pool.getCategories().contains(this)) {
+			pool.addCategory(this);
+		}
 	}
 
 	public Set<AbstractQuestion> getQuestions() {

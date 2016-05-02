@@ -64,4 +64,12 @@ public class CategoryController extends ApiController {
 		questionRepo.save(postedQuestion);
 		return postedQuestion;	
 	}
+	
+	@NeedsLoggedInAccount(admin = "true")
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public void deleteCategory(@PathVariable("id") long id) {
+		Category category = catRepo.findById(id);
+		category.getPool().removeCategory(category);
+		catRepo.delete(category);
+	}
 }

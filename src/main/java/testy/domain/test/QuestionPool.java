@@ -89,6 +89,9 @@ public class QuestionPool {
 			throw new NullPointerException();
 		}
 		categories.add(category);
+		if(category.getPool() != this) {
+			category.setPool(this);
+		}
 	}
 	
 	public void removeCategory(Category category) {
@@ -96,6 +99,9 @@ public class QuestionPool {
 			throw new NullPointerException();
 		}
 		categories.remove(category);
+		if(category.getPool() != null) {
+			category.setPool(null);
+		}
 	}
 	
 	public Set<Category> getCategories() {
