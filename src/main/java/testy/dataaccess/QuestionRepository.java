@@ -9,5 +9,7 @@ import testy.domain.question.AbstractQuestion;
 public interface QuestionRepository extends CrudRepository<AbstractQuestion, Long> {
 
 	Collection<AbstractQuestion> findAll();
+	
+	AbstractQuestion findById(long id);
 
 }

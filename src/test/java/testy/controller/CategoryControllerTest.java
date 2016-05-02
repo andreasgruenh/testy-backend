@@ -86,12 +86,12 @@ public class CategoryControllerTest extends ControllerTest {
 	@NeedsTestClasses
 	@NeedsSessions
 	@Test
-	public void POST_id_questions_withAdminPermissions_shouldReturnCreatedCategory() throws Exception {
+	public void POST_id_questions_withAdminPermissions_shouldReturnCreatedQuestion() throws Exception {
 		
 		// arrange
 		MCQuestion question = new MCQuestion();
 		question.setQuestionString("What the fuck is wrong with you?");
-		MCPossibility possibility1 = new MCPossibility("Größer", false);
+		MCPossibility possibility1 = new MCPossibility("Größer", true);
 		MCPossibility possibility2 = new MCPossibility("kleiner", true);
 		question.addAnswer(possibility1);
 		question.addAnswer(possibility2);
@@ -104,12 +104,14 @@ public class CategoryControllerTest extends ControllerTest {
 			.andExpect(status().isCreated()).andReturn().getResponse();
 
 		// assert
-		AbstractQuestion actualQuestion = mapper.readValue(response.getContentAsString(), AbstractQuestion.class);
+		MCQuestion actualQuestion = mapper.readValue(response.getContentAsString(), MCQuestion.class);
 		assertTrue("Question string should be returned",
 			actualQuestion.getQuestionString().equals(question.getQuestionString()));
 		assertTrue("Id should be set", actualQuestion.getId() != 0);
 		assertTrue("Category should be set correctly",
 			actualQuestion.getCategory().getId() == testClasses.category1.getId());
+		assertTrue("Correctness should be set correctly",
+			actualQuestion.getPossibleAnswers().iterator().next().isCorrect() == true );
 	}
 
 	@NeedsTestClasses

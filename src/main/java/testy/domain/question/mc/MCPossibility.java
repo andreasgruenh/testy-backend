@@ -18,17 +18,17 @@ public class MCPossibility {
 	
 	private final String text;
 	
-	private final boolean isCorrect;
+	private final boolean correct;
 	
 	@Deprecated
 	public MCPossibility() {
 		text = "";
-		isCorrect = false;
+		correct = false;
 	}
 	
 	public MCPossibility(String text, boolean isCorrect) {
 		this.text = text;
-		this.isCorrect = isCorrect;
+		this.correct = isCorrect;
 	}
 
 	public String getText() {
@@ -37,7 +37,7 @@ public class MCPossibility {
 
 	@JsonView(Test.class)
 	public boolean isCorrect() {
-		return isCorrect;
+		return correct;
 	}
 
 	public long getId() {
