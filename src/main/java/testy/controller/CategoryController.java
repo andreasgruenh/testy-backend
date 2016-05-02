@@ -37,7 +37,7 @@ public class CategoryController extends ApiController {
 	}
 	
 	@NeedsLoggedInAccount(admin = "true")
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
 	public Category updateCategory(@PathVariable("id") long id, @RequestBody Category postedCategory) {
 		Category changedCategory = catRepo.findById(id);
 		changedCategory.setMaxScore(postedCategory.getMaxScore());

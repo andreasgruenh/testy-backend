@@ -220,6 +220,7 @@ public class QuestionPoolControllerTest extends ControllerTest {
 	@Test
 	public void POST_poolsIdTest_shouldReturnTestScore() throws Exception {
 
+		// arrange
 		String answerString = "[{\"type\":\"MCAnswer\",\"id\":0,\"question\":{\"type\":\"MCQuestion\", \"id\":2},\"checkedPossibilities\":[{\"id\":4,\"text\":\"A1\"}],\"uncheckedPossibilities\":[{\"id\":3,\"text\":\"A2\"}]}]";
 		int expectedScore = 5;
 		
@@ -230,6 +231,7 @@ public class QuestionPoolControllerTest extends ControllerTest {
 				.content(answerString))
 				.andReturn().getResponse();
 		int score = Integer.parseInt(response.getContentAsString());
+		
 		// assert
 		assertTrue("Testscroe should be " + expectedScore + " but was " + response.getContentAsString(), score == expectedScore);
 	}

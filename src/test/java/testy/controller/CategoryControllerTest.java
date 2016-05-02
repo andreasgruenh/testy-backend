@@ -4,7 +4,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.iterableWithSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,14 +58,14 @@ public class CategoryControllerTest extends ControllerTest {
 	@NeedsTestClasses
 	@NeedsSessions
 	@Test
-	public void PUT_id_withoutAdminPermissions_shouldReturn403() throws Exception {
+	public void PATCH_id_withoutAdminPermissions_shouldReturn403() throws Exception {
 		// arrange
 		Category changedCat = new Category("Changed Category");
 		changedCat.setMaxScore(40);
 
 		// act
 		mockMvc.perform(
-			put("/categories/" + testClasses.category1.getId()).session(userSession)
+			patch("/categories/" + testClasses.category1.getId()).session(userSession)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(changedCat))).andExpect(
 			status().isForbidden());
@@ -74,14 +74,14 @@ public class CategoryControllerTest extends ControllerTest {
 	@NeedsTestClasses
 	@NeedsSessions
 	@Test
-	public void PUT_id_withAdminPermissions_shouldReturnChangedCategory() throws Exception {
+	public void PATH_id_withAdminPermissions_shouldReturnChangedCategory() throws Exception {
 		// arrange
 		Category changedCat = new Category("Changed Category");
 		changedCat.setMaxScore(40);
 
 		// act
 		mockMvc.perform(
-			put("/categories/" + testClasses.category1.getId()).session(adminSession)
+			patch("/categories/" + testClasses.category1.getId()).session(adminSession)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(changedCat))).andExpect(status().isOk())
 
