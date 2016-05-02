@@ -94,6 +94,7 @@ public class QuestionPoolController extends ApiController {
 		return newCategory;	
 	}
 	
+	@JsonView(Summary.class)
 	@RequestMapping(value = "/{id}/test", method = RequestMethod.GET)
 	public Collection<Category> getTest(@PathVariable("id") long id) {
 		return picker.generateCategoriesWithRandomQuestionsFrom(questionPoolRepo.findById(id));

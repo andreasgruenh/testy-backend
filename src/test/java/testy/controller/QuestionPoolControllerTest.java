@@ -212,7 +212,7 @@ public class QuestionPoolControllerTest extends ControllerTest {
 		mockMvc.perform(get("/pools/" + testClasses.questionPool1.getId() + "/test").session(userSession))
 		
 		// assert
-		.andExpect(jsonPath("$[0].questions[0].correct").doesNotExist()).andReturn().getResponse().getContentAsString();
+		.andExpect(jsonPath("$[0].questions[0].possibleAnswers[0].correct").doesNotExist());
 	}
 	
 	@NeedsSessions

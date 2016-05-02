@@ -5,7 +5,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import testy.domain.util.Views.Test;
 
 @Entity
 public class MCPossibility {
@@ -16,7 +18,6 @@ public class MCPossibility {
 	
 	private final String text;
 	
-	@JsonIgnore
 	private final boolean isCorrect;
 	
 	@Deprecated
@@ -34,7 +35,7 @@ public class MCPossibility {
 		return text;
 	}
 
-	@JsonIgnore
+	@JsonView(Test.class)
 	public boolean isCorrect() {
 		return isCorrect;
 	}

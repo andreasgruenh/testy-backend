@@ -1,6 +1,5 @@
 package testy.controller;
 
-import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -26,7 +25,7 @@ import testy.helper.annotations.NeedsTestClasses;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class CategoryControllerTest extends ControllerTest {
+public class QuestionControllerTest extends ControllerTest {
 
 	@NeedsTestClasses
 	@NeedsSessions
@@ -63,8 +62,7 @@ public class CategoryControllerTest extends ControllerTest {
 			.andExpect(status().isOk())
 
 			// assert
-			.andExpect(jsonPath("$", iterableWithSize(testClasses.category1.getQuestions().size())))
-			.andExpect(jsonPath("$[0].possibleAnswers[0].correct", is(any(Boolean.class))));
+			.andExpect(jsonPath("$", iterableWithSize(testClasses.category1.getQuestions().size())));
 	}
 	
 	@NeedsTestClasses
