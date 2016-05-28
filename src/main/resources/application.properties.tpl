@@ -1,6 +1,10 @@
 spring.resources.cache-period = 1
 spring.profiles.active =
 
+uploads.path =
+multipart.maxFileSize =
+multipart.maxRequestSize =
+
 ldap.userDnPatterns = 
 ldap.port = 
 ldap.root = 

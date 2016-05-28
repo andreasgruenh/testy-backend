@@ -25,6 +25,7 @@ public class QuestionPool {
 	
 	private String name;
 	private String description;
+	private String documentationFilePath;
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
@@ -56,6 +57,14 @@ public class QuestionPool {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getDocumentationFilePath() {
+		return documentationFilePath;
+	}
+
+	public void setDocumentationFilePath(String documentationFilePath) {
+		this.documentationFilePath = documentationFilePath;
 	}
 
 	public int getMaxScoreOfConcreteTest() {
