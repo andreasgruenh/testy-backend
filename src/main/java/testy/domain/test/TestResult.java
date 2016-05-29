@@ -1,22 +1,16 @@
 package testy.domain.test;
 
 import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import testy.domain.Account;
-import testy.domain.Subject;
-import testy.domain.question.AbstractAnswer;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 public class TestResult {
@@ -26,29 +20,49 @@ public class TestResult {
 	private long id;
 	
 	@ManyToOne
+	@JsonIgnoreProperties({"testResults"})
 	private Account user;
+	
+	private int score;
 	
 	private Timestamp timestamp;
 	
 	@ManyToOne
-	private Subject subject;
-	
-	@ManyToOne
-	@JsonIgnoreProperties({"categories", "percentageToPass"})
+	@JsonIgnoreProperties({"categories", "percentageToPass", "testResultsByAccount", "getResults", "results"})
 	private QuestionPool questionPool;
 	
-	@OneToMany
-	private Set<AbstractAnswer<?>> checkedAnswers = new HashSet<AbstractAnswer<?>>();
+	public TestResult(Account user, QuestionPool pool, int score, long time) {
+		this.user = user;
+		this.questionPool = pool;
+		this.score = score;
+		this.timestamp = new Timestamp(time);
+		
+		if (user == null) {
+			throw new NullPointerException();
+		}
+		if (pool == null) {
+			throw new NullPointerException();
+		}
+		
+		user.addTestResult(this);
+		pool.addTestResult(this);
+	}
 	
-	@OneToMany
-	private Set<AbstractAnswer<?>> uncheckedAnswers = new HashSet<AbstractAnswer<?>>();
+	@Deprecated
+	public TestResult() {
+		
+	}
 
 	public Account getUser() {
 		return user;
 	}
 
-	public void setUser(Account user) {
-		this.user = user;
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
 	}
 
 	public Timestamp getTimestamp() {
@@ -59,33 +73,8 @@ public class TestResult {
 		this.timestamp = timestamp;
 	}
 
-	public Set<AbstractAnswer<?>> getCheckedAnswers() {
-		return Collections.unmodifiableSet(checkedAnswers);
-	}
-
-	public void setCheckedAnswers(Set<AbstractAnswer<?>> checkedAnswers) {
-		this.checkedAnswers = checkedAnswers;
-	}
-
-	public Set<AbstractAnswer<?>> getUncheckedAnswers() {
-		return Collections.unmodifiableSet(uncheckedAnswers);
-	}
-
-	public void setUncheckedAnswers(Set<AbstractAnswer<?>> uncheckedAnswers) {
-		this.uncheckedAnswers = uncheckedAnswers;
-	}
-
 	public long getId() {
 		return id;
-	}
-
-	public Subject getSubject() {
-		return subject;
-	}
-
-	public void setSubject(Subject subject) {
-		this.subject = subject;
-		
 	}
 
 	public QuestionPool getQuestionPool() {

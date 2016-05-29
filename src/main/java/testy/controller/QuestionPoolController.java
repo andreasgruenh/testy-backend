@@ -22,10 +22,13 @@ import testy.dataaccess.AccountRepository;
 import testy.dataaccess.CategoryRepository;
 import testy.dataaccess.QuestionPoolRepository;
 import testy.dataaccess.SubjectRepository;
+import testy.dataaccess.TestResultRepository;
 import testy.domain.question.AbstractAnswer;
 import testy.domain.test.Category;
 import testy.domain.test.QuestionPicker;
 import testy.domain.test.QuestionPool;
+import testy.domain.test.TestResult;
+import testy.domain.test.TestResultFactory;
 import testy.domain.test.TestValidator;
 import testy.domain.util.Views.Summary;
 
@@ -45,6 +48,9 @@ public class QuestionPoolController extends ApiController {
 	QuestionPoolRepository questionPoolRepo;
 	
 	@Autowired
+	TestResultRepository testResultRepo;
+	
+	@Autowired
 	QuestionPicker picker;
 	
 	@Autowired
@@ -55,6 +61,9 @@ public class QuestionPoolController extends ApiController {
 	
 	@Autowired
 	CategoryRepository catRepo;
+	
+	@Autowired
+	TestResultFactory testResultFactory;
 	
 	@NeedsLoggedInAccount(admin = "true")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -105,16 +114,26 @@ public class QuestionPoolController extends ApiController {
 	}
 	
 	@JsonView(Summary.class)
+	@NeedsLoggedInAccount
 	@RequestMapping(value = "/{id}/test", method = RequestMethod.GET)
 	public Collection<Category> getTest(@PathVariable("id") long id) {
 		return picker.generateCategoriesWithRandomQuestionsFrom(questionPoolRepo.findById(id));
 	}
 	
+	@NeedsLoggedInAccount
 	@RequestMapping(value = "/{id}/test", method = RequestMethod.POST)
-	public int getTestResult(@PathVariable("id") long id, @SuppressWarnings("rawtypes") @RequestBody AbstractAnswer[] answers) {
-		return validator.validateTest(answers);
+	public TestResult getTestResult(@PathVariable("id") long id, @SuppressWarnings("rawtypes") @RequestBody AbstractAnswer[] answers) {
+		int score = validator.validateTest(answers);
+		QuestionPool pool = questionPoolRepo.findById(id);
+		TestResult result = 
+			testResultFactory.createTestResult(this.loggedInAccount, pool, score);
+		testResultRepo.save(result);
+		questionPoolRepo.save(pool);
+		accountRepo.save(loggedInAccount);
+		return result;
 	}
 	
+	@NeedsLoggedInAccount(admin = "true")
 	@RequestMapping(value ="/{id}/material", method = RequestMethod.POST)
 	public void uploadFile(@PathVariable("id") long id, @RequestParam MultipartFile file) throws IllegalStateException, IOException {
 		String path = env.getProperty("uploads.path") + file.getOriginalFilename();
@@ -124,6 +143,7 @@ public class QuestionPoolController extends ApiController {
 		questionPoolRepo.save(pool);
 	}
 	
+	@NeedsLoggedInAccount
 	@RequestMapping(value ="/{id}/material", method = RequestMethod.GET, produces = "application/pdf")
 	public FileSystemResource uploadFile(@PathVariable("id") long id) throws IllegalStateException, IOException {
 		QuestionPool pool = questionPoolRepo.findById(id);

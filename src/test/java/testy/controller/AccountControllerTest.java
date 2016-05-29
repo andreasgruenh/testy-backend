@@ -44,7 +44,7 @@ public class AccountControllerTest extends ControllerTest {
 			.andExpect(jsonPath("$.firstname", is(equalTo(testClasses.user.getFirstname()))))
 			.andExpect(jsonPath("$.lastname", is(equalTo(testClasses.user.getLastname()))))
 			.andExpect(jsonPath("$.email", is(equalTo(testClasses.user.getEmail()))))
-			.andExpect(jsonPath("$.testResults").doesNotExist());
+			.andExpect(jsonPath("$.testResults").exists());
 	}
 
 	@NeedsSessions

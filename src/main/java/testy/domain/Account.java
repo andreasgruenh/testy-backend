@@ -7,14 +7,13 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import testy.domain.test.TestResult;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Account {
@@ -32,8 +31,7 @@ public class Account {
 	
 	private String email;
 	
-	@JsonIgnore
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<TestResult> testResults = new HashSet<TestResult>();;
 
 	public Account() {
@@ -98,7 +96,6 @@ public class Account {
 			throw new NullPointerException();
 		}
 		testResults.add(result);
-		result.setUser(this);
 	}
 	
 	public void removeTestResult(TestResult result) {
@@ -106,8 +103,5 @@ public class Account {
 			throw new NullPointerException();
 		}
 		testResults.remove(result);
-		if(result.getUser() != null) {
-			result.setUser(null);
-		}
 	}
 }

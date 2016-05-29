@@ -19,6 +19,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import testy.domain.test.Category;
 import testy.domain.test.QuestionPool;
+import testy.domain.test.TestResult;
 import testy.helper.annotations.NeedsSessions;
 import testy.helper.annotations.NeedsTestClasses;
 
@@ -128,6 +129,7 @@ public class QuestionPoolControllerTest extends ControllerTest {
 			.andExpect(jsonPath("$.name", is(equalTo(testClasses.questionPool1.getName()))))
 			.andExpect(jsonPath("$.description", is(equalTo(testClasses.questionPool1.getDescription()))))
 			.andExpect(jsonPath("$.categories").doesNotExist())
+			.andExpect(jsonPath("$.results").exists())
 			.andExpect(
 				jsonPath("$.percentageToPass", is(equalTo(testClasses.questionPool1.getPercentageToPass()))))
 			.andExpect(
@@ -230,10 +232,20 @@ public class QuestionPoolControllerTest extends ControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(answerString))
 				.andReturn().getResponse();
-		int score = Integer.parseInt(response.getContentAsString());
+		TestResult result = mapper.readValue(response.getContentAsString(), TestResult.class);
 		
 		// assert
-		assertTrue("Testscroe should be " + expectedScore + " but was " + response.getContentAsString(), score == expectedScore);
+		assertTrue("Testscroe should be " + expectedScore + " but was " + result.getScore(),
+			result.getScore() == expectedScore);
+		assertTrue("User should be set correctly, was: " + result.getUser(),
+			result.getUser().getId() == testClasses.user.getId());
+		assertTrue("User should have reference to Result, size of results was: " + result.getUser().getTestResults().size(),
+			testClasses.user.getTestResults().size() == 1);
+		assertTrue("Pool should be set " + result.getQuestionPool(),
+			result.getQuestionPool().getId() == testClasses.questionPool1.getId());
+		assertTrue("Pool should have reference to Result, size of results was: " + result.getQuestionPool().getResults().size(),
+			testClasses.questionPool1.getResults().size() == 1);
+		
 	}
 	
 }

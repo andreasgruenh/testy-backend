@@ -1,7 +1,10 @@
 package testy.domain.test;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -9,9 +12,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import testy.domain.Account;
 import testy.domain.Subject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,6 +35,9 @@ public class QuestionPool {
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	private Set<Category> categories = new HashSet<Category>();
+	
+	@ManyToMany(cascade = CascadeType.ALL)
+	private Map<Account, TestResult> testResultsByAccount = new HashMap<Account, TestResult>();
 	
 	private int percentageToPass;
 	
@@ -113,8 +121,29 @@ public class QuestionPool {
 		}
 	}
 	
+	public void addTestResult(TestResult result) {
+		if (result == null) {
+			throw new NullPointerException();
+		}
+		if (result.getUser() == null) {
+			throw new NullPointerException();
+		}
+		this.testResultsByAccount.put(result.getUser(), result);
+	}
+	
+	public void removeTestResult(TestResult result) {
+		this.testResultsByAccount.remove(result.getUser());
+		if (result.getUser().getTestResults().contains(result)) {
+			result.getUser().removeTestResult(result);
+		}
+	}
+	
 	public Set<Category> getCategories() {
 		return Collections.unmodifiableSet(categories);
+	}
+	
+	public Collection<TestResult> getResults() {
+		return Collections.unmodifiableCollection(testResultsByAccount.values());
 	}
 
 	public Subject getSubject() {
