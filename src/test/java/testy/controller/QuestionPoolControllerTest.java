@@ -60,6 +60,7 @@ public class QuestionPoolControllerTest extends ControllerTest {
 		QuestionPool newPool = testClasses.questionPool1;
 		newPool.setPercentageToPass(100);
 		newPool.setName("geändert");
+		newPool.setWeeksAfterWhichTestHasToBeRepeated(56);
 
 		// act
 		MockHttpServletResponse response = mockMvc
@@ -81,6 +82,10 @@ public class QuestionPoolControllerTest extends ControllerTest {
 		assertTrue("Percentage to pass should have been updated. Expected: " + newPool.getPercentageToPass() +
 			"But was " + actualPool.getPercentageToPass(),
 			actualPool.getPercentageToPass() == newPool.getPercentageToPass());
+		assertTrue("Weeks after which test has to be repeated should have been updated. Expected: " + 
+			newPool.getWeeksAfterWhichTestHasToBeRepeated() +
+			"But was " + actualPool.getWeeksAfterWhichTestHasToBeRepeated(),
+			actualPool.getWeeksAfterWhichTestHasToBeRepeated() == newPool.getWeeksAfterWhichTestHasToBeRepeated());
 	}
 	
 	@NeedsSessions
@@ -224,7 +229,6 @@ public class QuestionPoolControllerTest extends ControllerTest {
 
 		// arrange
 		String answerString = "[{\"type\":\"MCAnswer\",\"id\":0,\"question\":{\"type\":\"MCQuestion\", \"id\":2},\"checkedPossibilities\":[{\"id\":4,\"text\":\"A1\"}],\"uncheckedPossibilities\":[{\"id\":3,\"text\":\"A2\"}]}]";
-		int expectedScore = 5;
 		
 		// act
 		MockHttpServletResponse response = mockMvc
@@ -235,8 +239,6 @@ public class QuestionPoolControllerTest extends ControllerTest {
 		TestResult result = mapper.readValue(response.getContentAsString(), TestResult.class);
 		
 		// assert
-		assertTrue("Testscroe should be " + expectedScore + " but was " + result.getScore(),
-			result.getScore() == expectedScore);
 		assertTrue("User should be set correctly, was: " + result.getUser(),
 			result.getUser().getId() == testClasses.user.getId());
 		assertTrue("User should have reference to Result, size of results was: " + result.getUser().getTestResults().size(),

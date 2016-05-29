@@ -70,7 +70,7 @@ public class TestClasses {
 		subject1 = new Subject("Fach 1");
 		subject1.setDescription("This is a new subject");
 		questionPool1 = new QuestionPool("Pool 1");
-		questionPool1.setPercentageToPass(80);
+		questionPool1.setPercentageToPass(25);
 		questionPool1.setDescription("This is a new pool");
 		questionPool1.setSubject(subject1);
 		category1 = new Category("Kategorie 1");

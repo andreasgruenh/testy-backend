@@ -9,6 +9,7 @@ import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import testy.dataaccess.AccountRepository;
 import testy.domain.Account;
@@ -23,6 +24,7 @@ import testy.domain.Account;
 @Configuration
 @ComponentScan
 @EnableAutoConfiguration
+@EnableScheduling
 public class Application extends SpringBootServletInitializer implements CommandLineRunner {
 
 	@Autowired

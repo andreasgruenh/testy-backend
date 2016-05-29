@@ -40,6 +40,7 @@ public class QuestionPool {
 	private Map<Account, TestResult> testResultsByAccount = new HashMap<Account, TestResult>();
 	
 	private int percentageToPass;
+	private int weeksAfterWhichTestHasToBeRepeated;
 	
 	@ManyToOne
 	private Subject subject;
@@ -95,6 +96,14 @@ public class QuestionPool {
 
 	public void setPercentageToPass(int percentageToPass) {
 		this.percentageToPass = percentageToPass;
+	}
+
+	public int getWeeksAfterWhichTestHasToBeRepeated() {
+		return weeksAfterWhichTestHasToBeRepeated;
+	}
+
+	public void setWeeksAfterWhichTestHasToBeRepeated(int weeksAfterWhichTestHasToBeRepeated) {
+		this.weeksAfterWhichTestHasToBeRepeated = weeksAfterWhichTestHasToBeRepeated;
 	}
 
 	public long getId() {

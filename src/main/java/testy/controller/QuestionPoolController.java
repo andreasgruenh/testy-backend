@@ -78,6 +78,7 @@ public class QuestionPoolController extends ApiController {
 		oldPool.setDescription(changedPool.getDescription());
 		oldPool.setName(changedPool.getName());
 		oldPool.setPercentageToPass(changedPool.getPercentageToPass());
+		oldPool.setWeeksAfterWhichTestHasToBeRepeated(changedPool.getWeeksAfterWhichTestHasToBeRepeated());
 		questionPoolRepo.save(oldPool);
 		return oldPool;
 	}
@@ -123,8 +124,12 @@ public class QuestionPoolController extends ApiController {
 	@NeedsLoggedInAccount
 	@RequestMapping(value = "/{id}/test", method = RequestMethod.POST)
 	public TestResult getTestResult(@PathVariable("id") long id, @SuppressWarnings("rawtypes") @RequestBody AbstractAnswer[] answers) {
-		int score = validator.validateTest(answers);
+		int absoluteScore = validator.validateTest(answers);
 		QuestionPool pool = questionPoolRepo.findById(id);
+		int score = (absoluteScore * 100 ) / pool.getMaxScoreOfConcreteTest();
+		if (pool.getPercentageToPass() > score) {
+			return testResultFactory.createTestResult(this.loggedInAccount, pool, score);			
+		}
 		TestResult result = 
 			testResultFactory.createTestResult(this.loggedInAccount, pool, score);
 		testResultRepo.save(result);
