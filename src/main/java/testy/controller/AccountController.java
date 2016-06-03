@@ -52,6 +52,22 @@ public class AccountController extends ApiController{
 	}
 	
 	@NeedsLoggedInAccount(admin = "true")
+	@RequestMapping(value = "/{id}", method = RequestMethod.POST)
+	Account updateOtherAccount(@PathVariable long id, @RequestBody Account newAccount) {
+		Account account = accountRepo.findById(id);
+		
+		account = AccountBuilder.startWithExisting(account)
+			.withEmail(newAccount.getEmail())
+			.withFirstname(newAccount.getFirstname())
+			.withLastname(newAccount.getLastname())
+			.isAdmin(newAccount.isAdmin())
+			.build();
+		
+		accountRepo.save(account);
+		return account;
+	}
+	
+	@NeedsLoggedInAccount(admin = "true")
 	@RequestMapping(value = "/{id}/isAdmin", method = RequestMethod.PUT)
 	Account setIsAdmin(@PathVariable("id") long id, @RequestBody boolean isAdmin) {
 		Account account = accountRepo.findById(id);
