@@ -30,11 +30,13 @@ public class SubjectController extends ApiController {
 	@Autowired
 	QuestionPoolRepository questionPoolRepo;
 	
+	@NeedsLoggedInAccount
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public Collection<Subject> getAllSubjects() {
 		return subjectRepo.findAll();
 	}
 	
+	@NeedsLoggedInAccount
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public Subject getSubjectById(@PathVariable long id) {
 		return subjectRepo.findById(id);
