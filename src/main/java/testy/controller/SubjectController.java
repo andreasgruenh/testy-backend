@@ -35,6 +35,11 @@ public class SubjectController extends ApiController {
 		return subjectRepo.findAll();
 	}
 	
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	public Subject getSubjectById(@PathVariable long id) {
+		return subjectRepo.findById(id);
+	}
+	
 	@NeedsLoggedInAccount(admin = "true")
 	@RequestMapping(value = "/", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.CREATED)
