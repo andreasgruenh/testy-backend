@@ -39,7 +39,7 @@ public class Application extends SpringBootServletInitializer implements Command
 
 	@Override
 	public void run(String... strings) throws Exception {
-		if (env.getProperty("spring.profiles.active").equals("dev")) {
+		if (env.getProperty("spring.profiles.active").equals("inmemory")) {
 			accountRepo.save(new Account("tschulz"));
 			accountRepo.save(new Account("tkalwa"));
 			accountRepo.save(new Account("afriedemann"));

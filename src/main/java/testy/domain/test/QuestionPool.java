@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,7 +37,7 @@ public class QuestionPool {
 	@JsonIgnore
 	private Set<Category> categories = new HashSet<Category>();
 	
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Map<Account, TestResult> testResultsByAccount = new HashMap<Account, TestResult>();
 	
 	private int percentageToPass;

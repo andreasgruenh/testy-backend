@@ -2,12 +2,18 @@ package testy.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketException;
+import java.nio.file.Files;
 import java.util.Collection;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -142,15 +148,20 @@ public class QuestionPoolController extends ApiController {
 	@RequestMapping(value ="/{id}/material", method = RequestMethod.POST)
 	public void uploadFile(@PathVariable("id") long id, @RequestParam MultipartFile file) throws IllegalStateException, IOException {
 		String path = env.getProperty("uploads.path") + file.getOriginalFilename();
-		file.transferTo(new File(path));
 		QuestionPool pool = questionPoolRepo.findById(id);
+		try {
+			Files.delete(new File(pool.getDocumentationFilePath()).toPath());
+		} catch (Exception e) {
+			
+		}
+		file.transferTo(new File(path));
 		pool.setDocumentationFilePath(path);
 		questionPoolRepo.save(pool);
 	}
 	
 	@NeedsLoggedInAccount
 	@RequestMapping(value ="/{id}/material", method = RequestMethod.GET, produces = "application/pdf")
-	public FileSystemResource uploadFile(@PathVariable("id") long id) throws IllegalStateException, IOException {
+	public FileSystemResource uploadFile(@PathVariable("id") long id) {
 		QuestionPool pool = questionPoolRepo.findById(id);
 		if (pool == null) {
 			throw new ResourceNotFoundException("There is no question pool with this id");
@@ -163,5 +174,9 @@ public class QuestionPoolController extends ApiController {
 		}
 	}
 	
-	
+	@ResponseStatus(value=HttpStatus.OK)
+	@ExceptionHandler({SocketException.class, ClientAbortException.class})
+	public void handleChromeBug(HttpServletRequest req, Exception exception) {
+
+	}
 }
