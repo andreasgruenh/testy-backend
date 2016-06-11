@@ -203,8 +203,7 @@ public class SubjectControllerTest extends ControllerTest {
 			.andExpect(jsonPath("$[0].id", is(any(Integer.class))))
 			.andExpect(jsonPath("$[0].name", is(any(String.class))))
 			.andExpect(jsonPath("$[0].maxScoreOfConcreteTest", is(any(Integer.class))))
-			.andExpect(jsonPath("$[0].percentageToPass", is(any(Integer.class))))
-			.andExpect(jsonPath("$[0].categories").doesNotExist());
+			.andExpect(jsonPath("$[0].percentageToPass", is(any(Integer.class))));
 
 	}
 

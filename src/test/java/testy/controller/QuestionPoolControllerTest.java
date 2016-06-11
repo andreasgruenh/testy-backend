@@ -133,7 +133,6 @@ public class QuestionPoolControllerTest extends ControllerTest {
 			.andExpect(jsonPath("$.id", is(equalTo((int) testClasses.questionPool1.getId()))))
 			.andExpect(jsonPath("$.name", is(equalTo(testClasses.questionPool1.getName()))))
 			.andExpect(jsonPath("$.description", is(equalTo(testClasses.questionPool1.getDescription()))))
-			.andExpect(jsonPath("$.categories").doesNotExist())
 			.andExpect(jsonPath("$.results").exists())
 			.andExpect(
 				jsonPath("$.percentageToPass", is(equalTo(testClasses.questionPool1.getPercentageToPass()))))

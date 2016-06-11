@@ -20,7 +20,7 @@ import javax.persistence.OneToMany;
 import testy.domain.Account;
 import testy.domain.Subject;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 public class QuestionPool {
@@ -34,7 +34,7 @@ public class QuestionPool {
 	private String documentationFilePath;
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnore
+	@JsonIgnoreProperties({"pool"})
 	private Set<Category> categories = new HashSet<Category>();
 	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
