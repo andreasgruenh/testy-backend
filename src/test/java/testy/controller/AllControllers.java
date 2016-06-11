@@ -8,6 +8,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ AccountControllerTest.class, CategoryControllerTest.class, ControllerTest.class,
 		LdapLoginTest.class, MainControllerTest.class, QuestionControllerTest.class,
 		QuestionPoolControllerTest.class, SubjectControllerTest.class, TestResultControllerTest.class })
-public class AllTests {
+public class AllControllers {
 
 }
