@@ -15,9 +15,6 @@ import testy.dataaccess.CategoryRepository;
 import testy.dataaccess.QuestionRepository;
 import testy.domain.question.AbstractQuestion;
 import testy.domain.test.Category;
-import testy.domain.util.Views.Summary;
-
-import com.fasterxml.jackson.annotation.JsonView;
 
 @RestController
 @RequestMapping("/categories")
@@ -29,7 +26,6 @@ public class CategoryController extends ApiController {
 	@Autowired
 	QuestionRepository questionRepo;
 	
-	@JsonView(Summary.class)
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public Category getCategory(@PathVariable("id") long id) {
 		return catRepo.findById(id);
