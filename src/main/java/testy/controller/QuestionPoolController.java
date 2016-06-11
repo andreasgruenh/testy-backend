@@ -98,7 +98,6 @@ public class QuestionPoolController extends ApiController {
 	}
 	
 	@NeedsLoggedInAccount(admin = "true")
-	@JsonView(Summary.class)
 	@RequestMapping(value = "/{id}/categories", method = RequestMethod.GET)
 	public Collection<Category> getAllCategories(@PathVariable("id") long id) {
 		return questionPoolRepo.findById(id).getCategories();
@@ -120,7 +119,6 @@ public class QuestionPoolController extends ApiController {
 		return newCategory;	
 	}
 	
-	@JsonView(Summary.class)
 	@NeedsLoggedInAccount
 	@RequestMapping(value = "/{id}/test", method = RequestMethod.GET)
 	public Collection<Category> getTest(@PathVariable("id") long id) {
