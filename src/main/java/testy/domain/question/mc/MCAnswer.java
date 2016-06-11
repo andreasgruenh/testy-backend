@@ -6,9 +6,9 @@ import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import testy.domain.question.AbstractAnswer;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @Entity
 @JsonTypeName("MCAnswer")

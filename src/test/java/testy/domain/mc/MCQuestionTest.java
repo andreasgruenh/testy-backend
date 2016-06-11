@@ -1,7 +1,7 @@
 package testy.domain.mc;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static testy.helper.UnmodifiableChecker.isUnmodifiable;
 
 import org.junit.Before;

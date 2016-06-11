@@ -1,13 +1,12 @@
 package testy.helper;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.stereotype.Service;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Service
 public class SessionEstablisher {

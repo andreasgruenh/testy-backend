@@ -36,9 +36,6 @@ import testy.domain.test.QuestionPool;
 import testy.domain.test.TestResult;
 import testy.domain.test.TestResultFactory;
 import testy.domain.test.TestValidator;
-import testy.domain.util.Views.Summary;
-
-import com.fasterxml.jackson.annotation.JsonView;
 
 @RestController
 @RequestMapping("/pools")

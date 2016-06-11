@@ -1,6 +1,6 @@
 package testy.domain.mc;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -9,9 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import testy.domain.question.mc.MCAnswer;
+import testy.domain.question.mc.MCAnswerValidator;
 import testy.domain.question.mc.MCPossibility;
 import testy.domain.question.mc.MCQuestion;
-import testy.domain.question.mc.MCAnswerValidator;
 
 public class MCAnswerValidatorTest {
 

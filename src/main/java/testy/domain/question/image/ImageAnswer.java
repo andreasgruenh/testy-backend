@@ -2,9 +2,9 @@ package testy.domain.question.image;
 
 import javax.persistence.Entity;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import testy.domain.question.AbstractAnswer;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @Entity
 @JsonTypeName("ImageAnswer")
