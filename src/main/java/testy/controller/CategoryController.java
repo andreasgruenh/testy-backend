@@ -55,7 +55,6 @@ public class CategoryController extends ApiController {
 		
 		Category category = catRepo.findById(id);
 		category.addQuestion(postedQuestion);
-		catRepo.save(category);
 		
 		questionRepo.save(postedQuestion);
 		return postedQuestion;	
