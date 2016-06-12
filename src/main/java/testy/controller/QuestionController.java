@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import testy.controller.exception.ResourceNotFoundException;
 import testy.dataaccess.CategoryRepository;
 import testy.dataaccess.QuestionRepository;
 import testy.domain.question.AbstractQuestion;
@@ -33,10 +34,12 @@ public class QuestionController extends ApiController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
 	public AbstractQuestion updateQuestion(@PathVariable("id") long id, @RequestBody AbstractQuestion question) {
 		AbstractQuestion oldQuestion = questionRepo.findById(id);
+		if (oldQuestion == null) throw new ResourceNotFoundException("No question with given id");
 		Category category = oldQuestion.getCategory();
 		oldQuestion.unsetCategory();
 		questionRepo.delete(oldQuestion);
-		question.setCategory(category);
+		catRepo.save(category);
+		category.addQuestion(question);
 		questionRepo.save(question);
 		return question;
 	}
@@ -45,6 +48,7 @@ public class QuestionController extends ApiController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public void deleteQuestion(@PathVariable("id") long id) {
 		AbstractQuestion question = questionRepo.findById(id);
+		if (question == null) throw new ResourceNotFoundException("No question with given id");
 		question.unsetCategory();
 		questionRepo.delete(question);
 	}
