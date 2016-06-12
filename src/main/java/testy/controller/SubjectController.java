@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import testy.dataaccess.AccountRepository;
 import testy.dataaccess.QuestionPoolRepository;
 import testy.dataaccess.SubjectRepository;
+import testy.dataaccess.TestResultRepository;
 import testy.domain.Subject;
 import testy.domain.test.QuestionPool;
+import testy.domain.test.TestResult;
 
 @RestController
 @RequestMapping("/subjects")
@@ -26,6 +28,12 @@ public class SubjectController extends ApiController {
 	
 	@Autowired
 	SubjectRepository subjectRepo;
+	
+	@Autowired
+	TestResultRepository testResultRepo;
+	
+	@Autowired
+	Helper helper;
 	
 	@Autowired
 	QuestionPoolRepository questionPoolRepo;
@@ -53,6 +61,8 @@ public class SubjectController extends ApiController {
 	@NeedsLoggedInAccount(admin = "true")
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public void deleteSubject(@PathVariable long id) {
+		Collection<TestResult> results = testResultRepo.findAll();
+		helper.deleteTestResults(results);
 		subjectRepo.delete(id);
 	}
 	

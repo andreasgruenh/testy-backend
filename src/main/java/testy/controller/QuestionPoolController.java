@@ -23,12 +23,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import testy.controller.exception.BadRequestException;
 import testy.controller.exception.ResourceNotFoundException;
 import testy.dataaccess.AccountRepository;
 import testy.dataaccess.CategoryRepository;
 import testy.dataaccess.QuestionPoolRepository;
 import testy.dataaccess.SubjectRepository;
 import testy.dataaccess.TestResultRepository;
+import testy.domain.Account;
 import testy.domain.question.AbstractAnswer;
 import testy.domain.test.Category;
 import testy.domain.test.QuestionPicker;
@@ -36,6 +38,9 @@ import testy.domain.test.QuestionPool;
 import testy.domain.test.TestResult;
 import testy.domain.test.TestResultFactory;
 import testy.domain.test.TestValidator;
+import testy.domain.util.Views.Summary;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 @RestController
 @RequestMapping("/pools")
@@ -68,7 +73,10 @@ public class QuestionPoolController extends ApiController {
 	@Autowired
 	TestResultFactory testResultFactory;
 	
-	@NeedsLoggedInAccount(admin = "true")
+	@Autowired
+	Helper helper;
+	
+	@NeedsLoggedInAccount
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public QuestionPool getQuestionPool(@PathVariable("id") long id) {
 		return questionPoolRepo.findById(id);
@@ -90,6 +98,7 @@ public class QuestionPoolController extends ApiController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public void deleteQuestionPool(@PathVariable("id") long id) {
 		QuestionPool pool = questionPoolRepo.findById(id);
+		helper.deleteTestResults(pool.getResults());
 		pool.getSubject().removeQuestionPool(pool);
 		questionPoolRepo.delete(id);
 	}
@@ -117,6 +126,7 @@ public class QuestionPoolController extends ApiController {
 	}
 	
 	@NeedsLoggedInAccount
+	@JsonView(Summary.class)
 	@RequestMapping(value = "/{id}/test", method = RequestMethod.GET)
 	public Collection<Category> getTest(@PathVariable("id") long id) {
 		return picker.generateCategoriesWithRandomQuestionsFrom(questionPoolRepo.findById(id));
@@ -125,18 +135,23 @@ public class QuestionPoolController extends ApiController {
 	@NeedsLoggedInAccount
 	@RequestMapping(value = "/{id}/test", method = RequestMethod.POST)
 	public TestResult getTestResult(@PathVariable("id") long id, @SuppressWarnings("rawtypes") @RequestBody AbstractAnswer[] answers) {
-		int absoluteScore = validator.validateTest(answers);
-		QuestionPool pool = questionPoolRepo.findById(id);
-		int score = (absoluteScore * 100 ) / pool.getMaxScoreOfConcreteTest();
-		if (pool.getPercentageToPass() > score) {
-			return testResultFactory.createTestResult(this.loggedInAccount, pool, score);			
+		try {
+			int absoluteScore = validator.validateTest(answers);
+			QuestionPool pool = questionPoolRepo.findById(id);
+			int score = (absoluteScore * 100 ) / pool.getMaxScoreOfConcreteTest();
+			if (pool.getPercentageToPass() > score) {
+				return testResultFactory.createTestResult(this.loggedInAccount, pool, score);			
+			}
+			TestResult lastResult = getLastTestResult(pool, loggedInAccount);
+			helper.deleteTestResult(lastResult);
+			TestResult result = 
+				testResultFactory.createTestResult(this.loggedInAccount, pool, score);
+			testResultRepo.save(result);
+			questionPoolRepo.save(pool);
+			return result;
+		} catch(Exception e) {
+			throw new BadRequestException("Bad input");
 		}
-		TestResult result = 
-			testResultFactory.createTestResult(this.loggedInAccount, pool, score);
-		testResultRepo.save(result);
-		questionPoolRepo.save(pool);
-		accountRepo.save(loggedInAccount);
-		return result;
 	}
 	
 	@NeedsLoggedInAccount(admin = "true")
@@ -173,5 +188,15 @@ public class QuestionPoolController extends ApiController {
 	@ExceptionHandler({SocketException.class, ClientAbortException.class})
 	public void handleChromeBug(HttpServletRequest req, Exception exception) {
 
+	}
+	
+	private TestResult getLastTestResult(QuestionPool pool, Account account) {
+		Collection<TestResult> results = pool.getResults();
+		for(TestResult result: results) {
+			if(result.getUser().getAccountName().equals(account.getAccountName())) {
+				return result;
+			}
+		}
+		return null;
 	}
 }

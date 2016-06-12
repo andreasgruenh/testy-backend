@@ -27,15 +27,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class QuestionPoolControllerTest extends ControllerTest {
 
-	@NeedsSessions
-	@NeedsTestClasses
-	@Test
-	public void GET_poolsId_withoutPermissionsShouldReturn403() throws Exception {
-
-		// act + assert
-		mockMvc.perform(get("/pools/" + testClasses.questionPool1.getId()).session(userSession)).andExpect(
-			status().isForbidden());
-	}
 	
 	@NeedsSessions
 	@NeedsTestClasses
@@ -164,8 +155,7 @@ public class QuestionPoolControllerTest extends ControllerTest {
 			// assert
 			.andExpect(jsonPath("$[0].id", is(any(Integer.class))))
 			.andExpect(jsonPath("$[0].name", is(any(String.class))))
-			.andExpect(jsonPath("$[0].maxScore", is(any(Integer.class))))
-			.andExpect(jsonPath("$[0].questions").doesNotExist());
+			.andExpect(jsonPath("$[0].maxScore", is(any(Integer.class))));
 	}
 	
 	@NeedsSessions
@@ -218,7 +208,9 @@ public class QuestionPoolControllerTest extends ControllerTest {
 		mockMvc.perform(get("/pools/" + testClasses.questionPool1.getId() + "/test").session(userSession))
 		
 		// assert
-		.andExpect(jsonPath("$[0].questions[0].possibleAnswers[0].correct").doesNotExist());
+		.andExpect(jsonPath("$[0].questions[0].questionString", is(any(String.class))))
+		.andExpect(jsonPath("$[0].questions[0].possibleAnswers[0].correct").doesNotExist())
+		.andExpect(jsonPath("$[0].questions[0].possibleAnswers[0].text").isString());
 	}
 	
 	@NeedsSessions
@@ -227,7 +219,7 @@ public class QuestionPoolControllerTest extends ControllerTest {
 	public void POST_poolsIdTest_shouldReturnTestScore() throws Exception {
 
 		// arrange
-		String answerString = "[{\"type\":\"MCAnswer\",\"id\":0,\"question\":{\"type\":\"MCQuestion\", \"id\":2},\"checkedPossibilities\":[{\"id\":4,\"text\":\"A1\"}],\"uncheckedPossibilities\":[{\"id\":3,\"text\":\"A2\"}]}]";
+		String answerString = "[{\"type\":\"MCAnswer\",\"id\":0,\"question\":{\"type\":\"MCQuestion\", \"id\":" + testClasses.question1.getId() + "},\"checkedPossibilities\":[{\"id\":" + testClasses.possibility1.getId() + ",\"text\":\"A1\"}],\"uncheckedPossibilities\":[{\"id\":" + testClasses.possibility2.getId() + ",\"text\":\"A2\"}]}]";	
 		
 		// act
 		MockHttpServletResponse response = mockMvc
@@ -246,6 +238,29 @@ public class QuestionPoolControllerTest extends ControllerTest {
 			result.getQuestionPool().getId() == testClasses.questionPool1.getId());
 		assertTrue("Pool should have reference to Result, size of results was: " + result.getQuestionPool().getResults().size(),
 			testClasses.questionPool1.getResults().size() == 1);
+		
+	}
+	
+	@NeedsSessions
+	@NeedsTestClasses
+	@Test
+	public void POST_poolsIdTest_twice_shouldNotFail() throws Exception {
+
+		// arrange
+		String answerString = "[{\"type\":\"MCAnswer\",\"id\":0,\"question\":{\"type\":\"MCQuestion\", \"id\":" + testClasses.question1.getId() + "},\"checkedPossibilities\":[{\"id\":" + testClasses.possibility1.getId() + ",\"text\":\"A1\"}],\"uncheckedPossibilities\":[{\"id\":" + testClasses.possibility2.getId() + ",\"text\":\"A2\"}]}]";	
+		
+		// act
+		mockMvc
+				.perform(post("/pools/" + testClasses.questionPool1.getId() + "/test").session(userSession)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(answerString))
+				.andReturn().getResponse();
+		
+		mockMvc
+			.perform(post("/pools/" + testClasses.questionPool1.getId() + "/test").session(userSession)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(answerString))
+			.andReturn().getResponse();
 		
 	}
 	

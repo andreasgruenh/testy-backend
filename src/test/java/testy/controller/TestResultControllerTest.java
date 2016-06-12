@@ -32,7 +32,8 @@ public class TestResultControllerTest extends ControllerTest {
 	public void DELETE_testResultsId_withPermissions_shouldDeleteResult() throws Exception {
 
 		// arrange
-		String answerString = "[{\"type\":\"MCAnswer\",\"id\":0,\"question\":{\"type\":\"MCQuestion\", \"id\":2},\"checkedPossibilities\":[{\"id\":4,\"text\":\"A1\"}],\"uncheckedPossibilities\":[{\"id\":3,\"text\":\"A2\"}]}]";
+		String answerString = "[{\"type\":\"MCAnswer\",\"id\":0,\"question\":{\"type\":\"MCQuestion\", \"id\":" + testClasses.question1.getId() + "},\"checkedPossibilities\":[{\"id\":" + testClasses.possibility1.getId() + ",\"text\":\"A1\"}],\"uncheckedPossibilities\":[{\"id\":" + testClasses.possibility2.getId() + ",\"text\":\"A2\"}]}]";	
+		
 		MockHttpServletResponse response = mockMvc
 				.perform(post("/pools/" + testClasses.questionPool1.getId() + "/test").session(userSession)
 				.contentType(MediaType.APPLICATION_JSON)

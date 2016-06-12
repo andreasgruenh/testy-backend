@@ -29,4 +29,8 @@ public abstract class AbstractAnswer<Q extends AbstractQuestion> {
 	protected Q question;
 	
 	public abstract int validate();
+	
+	public Q getQuestion() {
+		return question;
+	}
 }

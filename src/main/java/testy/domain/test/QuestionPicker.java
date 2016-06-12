@@ -20,10 +20,10 @@ public class QuestionPicker {
 		
 		Set<Category> categories =  pool.getCategories();
 		Set<Category> resultSet = new HashSet<Category>();
-		
 		for(Category cat: categories) {
 			Category strippedCat = new Category(cat.getName());
 			strippedCat.addAllQuestions(getRandomQuestionsFrom(cat));
+			strippedCat.setName(cat.getName());
 			resultSet.add(strippedCat);
 		}
 		return resultSet;

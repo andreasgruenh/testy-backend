@@ -14,26 +14,31 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import testy.domain.question.AbstractQuestion;
+import testy.domain.util.Views.Summary;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 public class Category {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@JsonView(Summary.class)
 	protected long id;
 	
+	@JsonView(Summary.class)
 	private String name;
 	
+	@JsonView(Summary.class)
 	private int maxScore;
 	
 	@ManyToOne
+	@JsonView(Summary.class)
 	@JsonIgnoreProperties({"categories"})
 	private QuestionPool pool;
 	
-	@JsonIgnore
+	@JsonView(Summary.class)
 	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
 	private Set<AbstractQuestion> questions;
 	

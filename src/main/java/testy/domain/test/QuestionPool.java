@@ -33,11 +33,11 @@ public class QuestionPool {
 	private String description;
 	private String documentationFilePath;
 	
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnoreProperties({"pool"})
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnoreProperties({"pool", "questions"})
 	private Set<Category> categories = new HashSet<Category>();
 	
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER)
 	private Map<Account, TestResult> testResultsByAccount = new HashMap<Account, TestResult>();
 	
 	private int percentageToPass;
@@ -143,9 +143,6 @@ public class QuestionPool {
 	
 	public void removeTestResult(TestResult result) {
 		this.testResultsByAccount.remove(result.getUser());
-		if (result.getUser().getTestResults().contains(result)) {
-			result.getUser().removeTestResult(result);
-		}
 	}
 	
 	public Set<Category> getCategories() {

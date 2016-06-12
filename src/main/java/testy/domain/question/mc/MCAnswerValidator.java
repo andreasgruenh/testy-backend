@@ -1,5 +1,6 @@
 package testy.domain.question.mc;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import testy.domain.question.AbstractAnswerValidator;
@@ -11,8 +12,15 @@ public class MCAnswerValidator extends AbstractAnswerValidator<MCAnswer> {
 	    int score = 0;
 		
 	    MCQuestion question = answer.getQuestion();
-	    Set<MCPossibility> checkedAnswers = answer.getCheckedPossibilities();
-	    Set<MCPossibility> uncheckedAnswers = answer.getUncheckedPossibilities();
+	    Set<MCPossibility> checkedAnswers = new HashSet<MCPossibility>();
+	    for(MCPossibility sentPoss: answer.getCheckedPossibilities()) {
+	    	checkedAnswers.add(findById(question.getPossibleAnswers(), sentPoss));
+	    }
+	    
+	    Set<MCPossibility> uncheckedAnswers = new HashSet<MCPossibility>();
+	    for(MCPossibility sentPoss: answer.getUncheckedPossibilities()) {
+	    	uncheckedAnswers.add(findById(question.getPossibleAnswers(), sentPoss));
+	    }
 	    
 	    score = (int)(Math.floor(question.getMaxScore() * (1 - errorQuote(checkedAnswers, uncheckedAnswers))));
 	    
@@ -44,6 +52,13 @@ public class MCAnswerValidator extends AbstractAnswerValidator<MCAnswer> {
 			double result = (double)errorCount / answerCount;
 			return result;
 		}
+	}
+	
+	private MCPossibility findById(Iterable<MCPossibility> possibilities, MCPossibility possibility) {
+		for(MCPossibility correctPossibility: possibilities) {
+			if (possibility.getId() == correctPossibility.getId()) return correctPossibility;
+		}
+		return null;
 	}
 	
 }

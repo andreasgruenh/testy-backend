@@ -8,5 +8,7 @@ public class Views {
     public static class Test extends Summary {
     }
     
+    public static class Admin extends Summary{
+    }
 
 }

@@ -102,6 +102,15 @@ public class Account {
 		if(result == null) {
 			throw new NullPointerException();
 		}
-		testResults.remove(result);
+		TestResult foundResult = null;
+		for(TestResult tresult: testResults) {
+			if (tresult.getId() == result.getId()) {
+				foundResult = tresult;
+				break;
+			}
+		}
+		if (foundResult != null) {
+			testResults.remove(foundResult);			
+		}
 	}
 }

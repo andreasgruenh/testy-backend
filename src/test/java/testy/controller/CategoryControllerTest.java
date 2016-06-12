@@ -39,8 +39,7 @@ public class CategoryControllerTest extends ControllerTest {
 			// assert
 			.andExpect(jsonPath("$.id", is((int) testClasses.category1.getId())))
 			.andExpect(jsonPath("$.name", is(testClasses.category1.getName())))
-			.andExpect(jsonPath("$.maxScore", is(testClasses.category1.getMaxScore())))
-			.andExpect(jsonPath("$.questions").doesNotExist());
+			.andExpect(jsonPath("$.maxScore", is(testClasses.category1.getMaxScore())));
 	}
 
 	@NeedsTestClasses
