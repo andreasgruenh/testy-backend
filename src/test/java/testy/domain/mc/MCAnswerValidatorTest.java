@@ -9,7 +9,6 @@ import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 
-import scala.annotation.meta.setter;
 import testy.domain.question.mc.MCAnswer;
 import testy.domain.question.mc.MCAnswerValidator;
 import testy.domain.question.mc.MCPossibility;

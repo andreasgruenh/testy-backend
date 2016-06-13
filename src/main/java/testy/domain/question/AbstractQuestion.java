@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 
 import testy.domain.question.image.ImageQuestion;
@@ -35,6 +36,7 @@ public abstract class AbstractQuestion {
 	@OneToOne
 	private Category category;
 	
+	@Lob
 	@JsonView(Summary.class)
 	protected String questionString;
 	
