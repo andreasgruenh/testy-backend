@@ -89,6 +89,8 @@ public class QuestionPoolController extends ApiController {
 		oldPool.setDescription(changedPool.getDescription());
 		oldPool.setName(changedPool.getName());
 		oldPool.setPercentageToPass(changedPool.getPercentageToPass());
+		oldPool.setClosingFailureText(changedPool.getClosingFailureText());
+		oldPool.setClosingSuccessText(changedPool.getClosingSuccessText());
 		oldPool.setWeeksAfterWhichTestHasToBeRepeated(changedPool.getWeeksAfterWhichTestHasToBeRepeated());
 		questionPoolRepo.save(oldPool);
 		return oldPool;

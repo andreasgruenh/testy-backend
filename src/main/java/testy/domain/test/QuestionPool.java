@@ -33,6 +33,12 @@ public class QuestionPool {
 	private String name;
 	
 	@Lob
+	private String closingSuccessText;
+	
+	@Lob
+	private String closingFailureText;
+	
+	@Lob
 	private String description;
 	private String documentationFilePath;
 	
@@ -62,6 +68,22 @@ public class QuestionPool {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getClosingSuccessText() {
+		return closingSuccessText;
+	}
+
+	public void setClosingSuccessText(String closingSuccessText) {
+		this.closingSuccessText = closingSuccessText;
+	}
+
+	public String getClosingFailureText() {
+		return closingFailureText;
+	}
+
+	public void setClosingFailureText(String closingFailureText) {
+		this.closingFailureText = closingFailureText;
 	}
 
 	public String getDescription() {
