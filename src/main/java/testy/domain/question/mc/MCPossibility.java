@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 import testy.domain.util.Views.Admin;
 import testy.domain.util.Views.Summary;
@@ -19,6 +20,7 @@ public class MCPossibility {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	
+	@Lob
 	@JsonView(Summary.class)
 	private final String text;
 	
