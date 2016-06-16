@@ -62,7 +62,7 @@ public class SubjectController extends ApiController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public void deleteSubject(@PathVariable long id) {
 		Subject subject = subjectRepo.findById(id);
-		foreach(QuestionPool pool: subject.getQuestionPools()) {
+		for(QuestionPool pool: subject.getQuestionPools()) {
 			helper.deleteTestResults(pool.getResults());
 		}
 		subjectRepo.delete(id);
