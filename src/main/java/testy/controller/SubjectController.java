@@ -61,8 +61,10 @@ public class SubjectController extends ApiController {
 	@NeedsLoggedInAccount(admin = "true")
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public void deleteSubject(@PathVariable long id) {
-		Collection<TestResult> results = testResultRepo.findAll();
-		helper.deleteTestResults(results);
+		Subject subject = subjectRepo.findById(id);
+		foreach(QuestionPool pool: subject.getQuestionPools()) {
+			helper.deleteTestResults(pool.getResults());
+		}
 		subjectRepo.delete(id);
 	}
 	
